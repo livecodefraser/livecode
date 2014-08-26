@@ -764,12 +764,18 @@ static void MCPlatformStopUsingMenuAsMenubar(MCPlatformMenuRef p_menu)
 
 void MCPlatformShowMenubar(void)
 {
-	ShowMenuBar();
+    // Not supported in 64-bit applications
+#ifdef __32_BIT__
+    ShowMenuBar();
+#endif
 }
 
 void MCPlatformHideMenubar(void)
 {
+    // Not supported in 64-bit applications
+#ifdef __32_BIT__
 	HideMenuBar();
+#endif
 }
 
 void MCPlatformSetMenubar(MCPlatformMenuRef p_menu)

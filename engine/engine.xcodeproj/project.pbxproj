@@ -522,6 +522,7 @@
 		7278F6401843A2B100E35A65 /* libicuuc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 721CAAC718351E7400858545 /* libicuuc.a */; };
 		72876DE618CF32C400C20405 /* libskia.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F0CC9018CA28E500C01A67 /* libskia.a */; };
 		72876DE718CF32D700C20405 /* libskia.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F0CC9018CA28E500C01A67 /* libskia.a */; };
+		729DCF0219ACC7BC00103840 /* dskmac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 729DCF0119ACC76E00103840 /* dskmac.mm */; };
 		72C28AFA1911300D007F2AA0 /* segment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C28AF91911300D007F2AA0 /* segment.cpp */; };
 		72D6032418476FC90022379C /* libicudata.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 721CAAC218351E7400858545 /* libicudata.a */; };
 		72D6032518476FC90022379C /* libicui18n.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 721CAAC018351E1800858545 /* libicui18n.a */; };
@@ -647,7 +648,6 @@
 		BEF6187B19470EF500C42C57 /* syntax.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DDC6CA616A2CFBF007B6879 /* syntax.cpp */; };
 		BEF6187C19470F6F00C42C57 /* segment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72C28AF91911300D007F2AA0 /* segment.cpp */; };
 		BEF6187D19470F7D00C42C57 /* stacke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D587E410B8096FD00200116 /* stacke.cpp */; };
-		BEF6187E19470F9400C42C57 /* dskmac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BEFE81D317B2B32800C9D14F /* dskmac.cpp */; };
 		BEF6188119470FCD00C42C57 /* srvcgi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DFD485213BA28AE008DB91F /* srvcgi.cpp */; };
 		BEF61885194718A400C42C57 /* exec-interface-field-chunk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76D47DE81802FD03006F9102 /* exec-interface-field-chunk.cpp */; };
 		BEF61886194718A400C42C57 /* exec-interface-aclip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E875FD8117293B4F005A69F4 /* exec-interface-aclip.cpp */; };
@@ -673,7 +673,6 @@
 		BEF618A81947205D00C42C57 /* srvtheme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BEF618A71947205D00C42C57 /* srvtheme.cpp */; };
 		BEF618A9194720B600C42C57 /* notify.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DC66D8A1045D41700D1CFA3 /* notify.cpp */; };
 		BEFD23CD17B5233800B9310D /* sysspec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DFD486613BA28DA008DB91F /* sysspec.cpp */; };
-		BEFE81D417B2B32800C9D14F /* dskmac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BEFE81D317B2B32800C9D14F /* dskmac.cpp */; };
 		E8189EB615D17E8000194F25 /* exec-logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8189EB515D17E8000194F25 /* exec-logic.cpp */; };
 		E82206E1184F810A00117D10 /* resolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E82206E0184F810A00117D10 /* resolution.cpp */; };
 		E82206E2184F810A00117D10 /* resolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E82206E0184F810A00117D10 /* resolution.cpp */; };
@@ -1634,6 +1633,7 @@
 		721CAAC618351E7400858545 /* libicutu.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicutu.a; path = ../prebuilt/lib/mac/libicutu.a; sourceTree = "<group>"; };
 		721CAAC718351E7400858545 /* libicuuc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuuc.a; path = ../prebuilt/lib/mac/libicuuc.a; sourceTree = "<group>"; };
 		7238DF4E1848B189007EA049 /* MCBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MCBlock.h; path = src/MCBlock.h; sourceTree = "<group>"; };
+		729DCF0119ACC76E00103840 /* dskmac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = dskmac.mm; path = src/dskmac.mm; sourceTree = "<group>"; };
 		72C22E951945E48E00B18E8D /* syslnxfs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syslnxfs.cpp; path = src/syslnxfs.cpp; sourceTree = "<group>"; };
 		72C22E961945E48E00B18E8D /* syslnxregion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syslnxregion.cpp; path = src/syslnxregion.cpp; sourceTree = "<group>"; };
 		72C22E971945E48E00B18E8D /* sysunxrandom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sysunxrandom.cpp; path = src/sysunxrandom.cpp; sourceTree = "<group>"; };
@@ -1822,7 +1822,6 @@
 		BEF2C0EF17BA493A00E96459 /* socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socket.h; path = src/socket.h; sourceTree = "<group>"; };
 		BEF3110417C217C30073D70F /* dskw32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dskw32.cpp; path = src/dskw32.cpp; sourceTree = "<group>"; };
 		BEF618A71947205D00C42C57 /* srvtheme.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = srvtheme.cpp; path = src/srvtheme.cpp; sourceTree = "<group>"; };
-		BEFE81D317B2B32800C9D14F /* dskmac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dskmac.cpp; path = src/dskmac.cpp; sourceTree = "<group>"; };
 		E8189EB515D17E8000194F25 /* exec-logic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "exec-logic.cpp"; path = "src/exec-logic.cpp"; sourceTree = "<group>"; };
 		E82206E0184F810A00117D10 /* resolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = resolution.cpp; path = src/resolution.cpp; sourceTree = "<group>"; };
 		E864B41F15BDAB3F00F5361C /* legacy_spec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = legacy_spec.cpp; path = src/legacy_spec.cpp; sourceTree = "<group>"; };
@@ -2733,8 +2732,8 @@
 				BEBC51F31953513A00215C85 /* quicktime.cpp */,
 				BEBC51F41953513A00215C85 /* quicktime.stubs */,
 				4D8395DD17FECEB30002D53E /* dsklnx.cpp */,
-				BEFE81D317B2B32800C9D14F /* dskmac.cpp */,
 				4D05B90C13E06AAB001CD82A /* dsklnxmain.cpp */,
+				729DCF0119ACC76E00103840 /* dskmac.mm */,
 				4D05B90D13E06AAB001CD82A /* dskmain.cpp */,
 				4D05B90E13E06AAC001CD82A /* dskosxmain.mm */,
 				4D05B90F13E06AAC001CD82A /* dskw32main.cpp */,
@@ -4115,7 +4114,6 @@
 				BEF6187B19470EF500C42C57 /* syntax.cpp in Sources */,
 				BEF6187C19470F6F00C42C57 /* segment.cpp in Sources */,
 				BEF6187D19470F7D00C42C57 /* stacke.cpp in Sources */,
-				BEF6187E19470F9400C42C57 /* dskmac.cpp in Sources */,
 				BEF6188119470FCD00C42C57 /* srvcgi.cpp in Sources */,
 				BEF61885194718A400C42C57 /* exec-interface-field-chunk.cpp in Sources */,
 				BEF61886194718A400C42C57 /* exec-interface-aclip.cpp in Sources */,
@@ -4388,7 +4386,6 @@
 				4D8387211678B2C9003BEC7C /* imagebitmap.cpp in Sources */,
 				4D8387221678B2C9003BEC7C /* irle.cpp in Sources */,
 				E8DDE5E016C2B1A7007367E4 /* image_rep.cpp in Sources */,
-				BEFE81D417B2B32800C9D14F /* dskmac.cpp in Sources */,
 				BEFD23CD17B5233800B9310D /* sysspec.cpp in Sources */,
 				76FA930A17FC7301003DB770 /* exec-strings-chunk.cpp in Sources */,
 				76D47DE918030E50006F9102 /* exec-interface-field-chunk.cpp in Sources */,
@@ -4433,6 +4430,7 @@
 				BE36920C195880F300386D30 /* desktop-pasteboard.cpp in Sources */,
 				BE36920D195880F300386D30 /* desktop-stack.cpp in Sources */,
 				BE36920E195880F300386D30 /* desktop.cpp in Sources */,
+				729DCF0219ACC7BC00103840 /* dskmac.mm in Sources */,
 				BE168E6E19598EAD00B957D0 /* region.cpp in Sources */,
 				BE20AE05195B24B300850531 /* quicktimestubs.mac.cpp in Sources */,
 				1DC1249518FC422B00C2FEF3 /* quicktimestubs.mac.cpp in Sources */,

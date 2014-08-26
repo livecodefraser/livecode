@@ -234,20 +234,6 @@
 			remoteGlobalIDString = 4D9BF4FE171447CB00B32D29;
 			remoteInfo = "server-dbodbc";
 		};
-		7249F9F6196571C300D4D0DC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E8DAE3DB1714271C00B96A87 /* engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4DB846B3192B53E800771914;
-			remoteInfo = "Server-Community";
-		};
-		7249F9FF196571C400D4D0DC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E8DAE3DB1714271C00B96A87 /* engine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4DB846B4192B53E800771914;
-			remoteInfo = "Server-Community";
-		};
 		4DCACF3A197927FA0065D0A2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4DCACF2C197927FA0065D0A2 /* revvideograbber.xcodeproj */;
@@ -261,6 +247,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4D6758FD0A79F9A400FA96D2;
 			remoteInfo = revvideograbber;
+		};
+		7249F9F6196571C300D4D0DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8DAE3DB1714271C00B96A87 /* engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4DB846B3192B53E800771914;
+			remoteInfo = "Server-Community";
+		};
+		7249F9FF196571C400D4D0DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8DAE3DB1714271C00B96A87 /* engine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4DB846B4192B53E800771914;
+			remoteInfo = "Server-Community";
 		};
 		E8D3735D18CDDA40005C1182 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -785,17 +785,18 @@
 			remoteRef = 4D9BF505171447E900B32D29 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		7249FA00196571C400D4D0DC /* Server-Community */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = "Server-Community";
-			remoteRef = 7249F9FF196571C400D4D0DC /* PBXContainerItemProxy */;
-		};
 		4DCACF3B197927FA0065D0A2 /* revvideograbber.bundle */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = revvideograbber.bundle;
 			remoteRef = 4DCACF3A197927FA0065D0A2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7249FA00196571C400D4D0DC /* Server-Community */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "Server-Community";
+			remoteRef = 7249F9FF196571C400D4D0DC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		E8D3735E18CDDA40005C1182 /* revbrowser-cefprocess.app */ = {
@@ -966,15 +967,15 @@
 			name = "server-revxml";
 			targetProxy = 4D9BF4BF1714474E00B32D29 /* PBXContainerItemProxy */;
 		};
-		7249F9F7196571C300D4D0DC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Server-Community";
-			targetProxy = 7249F9F6196571C300D4D0DC /* PBXContainerItemProxy */;
-		};
 		4DF1BF8F197932DD00E4AC49 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = revvideograbber;
 			targetProxy = 4DF1BF8E197932DD00E4AC49 /* PBXContainerItemProxy */;
+		};
+		7249F9F7196571C300D4D0DC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Server-Community";
+			targetProxy = 7249F9F6196571C300D4D0DC /* PBXContainerItemProxy */;
 		};
 		E8DAE479171428B100B96A87 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

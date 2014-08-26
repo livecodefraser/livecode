@@ -144,7 +144,7 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 //  CONFIGURE DEFINITIONS FOR MAC
 //
 
-#if defined(__GNUC__) && defined(__APPLE__) && !defined(TARGET_OS_IPHONE)
+#if defined(__GNUC__) && defined(__APPLE__) && !TARGET_OS_IPHONE
 
 // Compiler
 #define __GCC__ 1
@@ -153,7 +153,7 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 #define __MAC__ 1
 
 // Architecture
-#if defined(__i386)
+#if defined(__i386) && !defined(__x86_64__)
 #define __32_BIT__ 1
 #define __LITTLE_ENDIAN__ 1
 #define __I386__ 1
@@ -225,7 +225,7 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 //  CONFIGURE DEFINITIONS FOR IOS
 //
 
-#if defined(__GNUC__) && defined(__APPLE__) && defined(TARGET_OS_IPHONE)
+#if defined(__GNUC__) && defined(__APPLE__) && TARGET_OS_IPHONE
 
 // Compiler
 #define __GCC__ 1
@@ -332,15 +332,16 @@ typedef unsigned int uint32_t;
 typedef signed int int32_t;
 
 // MDW-2013-04-15: [[ x64 ]] added 64-bit-safe typedefs
+// FG-2014-08-26: [[ 64-bit OSX ]] OSX defines these as long long
 #if !defined(uint64_t)
-#ifndef __LP64__
+#if defined(__APPLE__) || !defined(__LP64__)
 typedef unsigned long long int uint64_t;
 #else
 typedef unsigned long int uint64_t;
 #endif
 #endif
 #if !defined(int64_t)
-#ifndef __LP64__
+#if defined(__APPLE__) || !defined(__LP64__)
 typedef signed long long int int64_t;
 #else
 typedef signed long int int64_t;
@@ -433,6 +434,10 @@ typedef int64_t intptr_t;
 #else
 typedef int32_t intptr_t;
 #endif
+#endif
+
+#ifdef __APPLE__
+typedef unsigned long size_t;
 #endif
 
 #define INTPTR_MIN INT64_MIN
@@ -624,15 +629,13 @@ inline compare_t MCSgn(int64_t a) { return a < 0 ? -1 : (a > 0 ? 1 : 0); }
 //  COMPARE FUNCTIONS
 //
 
-inline compare_t MCCompare(int32_t a, int32_t b) { return a < b ? -1 : (a > b ? 1 : 0); }
-inline compare_t MCCompare(uint32_t a, uint32_t b) { return a < b ? -1 : (a > b ? 1 : 0); }
-inline compare_t MCCompare(int64_t a, int64_t b) { return a < b ? -1 : (a > b ? 1 : 0); }
-inline compare_t MCCompare(uint64_t a, uint64_t b) { return a < b ? -1 : (a > b ? 1 : 0); }
+inline compare_t MCCompare(unsigned int a, unsigned int b) { return a < b ? -1 : (a > b ? 1 : 0); }
+inline compare_t MCCompare(unsigned long a, unsigned long b) { return a < b ? -1 : (a > b ? 1 : 0); }
+inline compare_t MCCompare(unsigned long long a, unsigned long long b) { return a < b ? -1 : (a > b ? 1 : 0); }
+inline compare_t MCCompare(signed int a, signed int b) { return a < b ? -1 : (a > b ? 1 : 0); }
+inline compare_t MCCompare(signed long a, signed long b) { return a < b ? -1 : (a > b ? 1 : 0); }
+inline compare_t MCCompare(signed long long a, signed long long b) { return a < b ? -1 : (a > b ? 1 : 0); }
 
-#if !defined(__WINDOWS__) && !defined(__LINUX__) && !defined(__ANDROID__)
-inline compare_t MCCompare(intptr_t a, intptr_t b) { return a < b ? -1 : (a > b ? 1 : 0); }
-inline compare_t MCCompare(uintptr_t a, uintptr_t b) { return a < b ? -1 : (a > b ? 1 : 0); }
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //

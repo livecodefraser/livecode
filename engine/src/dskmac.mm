@@ -230,7 +230,7 @@ OSErr MCAppleEventHandlerDoSpecial(const AppleEvent *ae, AppleEvent *reply, long
 			if (reply->dataHandle != NULL)
 			{
 				short e = err;
-				AEPutParamPtr(reply, keyReplyErr, typeShortInteger, (Ptr)&e, sizeof(short));
+				AEPutParamPtr(reply, keyReplyErr, typeSInt16, (Ptr)&e, sizeof(short));
 			}
 		}
 		else
@@ -247,7 +247,7 @@ OSErr MCAppleEventHandlerDoSpecial(const AppleEvent *ae, AppleEvent *reply, long
 					if (err != noErr)
 					{
 						short e = err;
-						AEPutParamPtr(reply, keyReplyErr, typeShortInteger, (Ptr)&e, sizeof(short));
+						AEPutParamPtr(reply, keyReplyErr, typeSInt16, (Ptr)&e, sizeof(short));
 					}
 				}
 			}
@@ -379,7 +379,7 @@ OSErr MCAppleEventHandlerDoAEAnswer(const AppleEvent *ae, AppleEvent *reply, lon
 	else
 	{
 		short e;
-		if (AEGetParamPtr(ae, keyErrorNumber, typeSMInt, &rType, (Ptr)&e, sizeof(short), &rSize) == noErr
+		if (AEGetParamPtr(ae, keyErrorNumber, typeSInt16, &rType, (Ptr)&e, sizeof(short), &rSize) == noErr
             && e != noErr)
 		{
 			/* UNCHECKED */ MCStringFormat(AEAnswerErr, "Got error %d when sending Apple event", e);
@@ -1157,16 +1157,6 @@ static OSErr MCS_mac_pathtoref_and_leaf(MCStringRef p_path, FSRef& r_ref, UniCha
 	return t_error;
 }
 
-static OSErr MCS_mac_fsspec_to_fsref(const FSSpec *p_fsspec, FSRef *r_fsref)
-{
-	return FSpMakeFSRef(p_fsspec, r_fsref);
-}
-
-static OSErr MCS_mac_fsref_to_fsspec(const FSRef *p_fsref, FSSpec *r_fsspec)
-{
-	return FSGetCatalogInfo(p_fsref, 0, NULL, NULL, r_fsspec, NULL);
-}
-
 void MCS_mac_closeresourcefile(SInt16 p_ref) // TODO: remove?
 {
 	OSErr t_err;
@@ -1184,121 +1174,6 @@ bool MCS_mac_fsref_to_path(FSRef& p_ref, MCStringRef& r_path)
 	t_buffer.Shrink(strlen((const char*)t_buffer.Ptr()));
     
 	return MCStringCreateWithBytes(t_buffer.Ptr(), t_buffer.Size(), kMCStringEncodingUTF8, false, r_path);
-}
-
-bool MCS_mac_FSSpec2path(FSSpec *fSpec, MCStringRef& r_path)
-{
-#ifdef /* MCS_mac_FSSpec2path_dsk_mac */ LEGACY_SYSTEM
-	char *path = new char[PATH_MAX + 1];
-    
-    
-	char *fname = new char[PATH_MAX + 1];
-    
-	CopyPascalStringToC(fSpec->name, fname);
-	MCU_path2std(fname);
-    
-	char oldchar = fSpec->name[0];
-	Boolean dontappendname = False;
-	fSpec->name[0] = '\0';
-    
-	FSRef ref;
-    
-	// MW-2005-01-21: Removed the following two lines - function would not work if file did not already exist
-    
-	/* fSpec->name[0] = oldchar;
-     dontappendname = True;*/
-    
-	if ((errno = FSpMakeFSRef(fSpec, &ref)) != noErr)
-	{
-		if (errno == nsvErr)
-		{
-			fSpec->name[0] = oldchar;
-			if ((errno = FSpMakeFSRef(fSpec, &ref)) == noErr)
-			{
-				errno = FSRefMakePath(&ref, (unsigned char *)path, PATH_MAX);
-				dontappendname = True;
-			}
-			else
-				path[0] = '\0';
-		}
-		else
-			path[0] = '\0';
-	}
-	else
-		errno = FSRefMakePath(&ref, (unsigned char *)path, PATH_MAX);
-	uint4 destlen;
-	char *tutfpath = new char[PATH_MAX + 1];
-	destlen = PATH_MAX;
-	MCS_utf8tonative(path, strlen(path), tutfpath, destlen);
-	tutfpath[destlen] = '\0';
-	if (!dontappendname)
-	{
-		if (tutfpath[destlen - 1] != '/')
-			strcat(tutfpath, "/");
-		strcat(tutfpath, fname);
-	}
-	delete fname;
-	delete path;
-	return tutfpath;
-#endif /* MCS_mac_FSSpec2path_dsk_mac */
-    MCAutoNativeCharArray t_path, t_name;
-    MCAutoStringRef t_filename;
-    MCAutoStringRef t_filename_std;
-    char *t_char_ptr;
-    
-    t_path.New(PATH_MAX + 1);
-    t_name.New(PATH_MAX + 1);
-    
-    t_char_ptr = (char*)t_path.Chars();
-    
-	CopyPascalStringToC(fSpec->name, (char*)t_name.Chars());
-    
-    /* UNCHECKED */ t_name . Shrink(MCCStringLength((const char *)t_name . Chars()));
-    /* UNCHECKED */ t_name.CreateStringAndRelease(&t_filename_std);
-	/* UNCHECKED */ MCS_pathfromnative(*t_filename_std, &t_filename);
-
-	char oldchar = fSpec->name[0];
-	Boolean dontappendname = False;
-	fSpec->name[0] = '\0';
-    
-	FSRef ref;
-    
-	// MW-2005-01-21: Removed the following two lines - function would not work if file did not already exist
-    
-	/* fSpec->name[0] = oldchar;
-     dontappendname = True;*/
-    
-	if ((errno = FSpMakeFSRef(fSpec, &ref)) != noErr)
-	{
-		if (errno == nsvErr)
-		{
-			fSpec->name[0] = oldchar;
-			if ((errno = FSpMakeFSRef(fSpec, &ref)) == noErr)
-			{
-				errno = FSRefMakePath(&ref, (unsigned char *)t_char_ptr, PATH_MAX);
-				dontappendname = True;
-			}
-			else
-				t_char_ptr[0] = '\0';
-		}
-		else
-			t_char_ptr[0] = '\0';
-	}
-	else
-		errno = FSRefMakePath(&ref, (unsigned char *)t_char_ptr, PATH_MAX);
-    
-    MCAutoStringRef t_path_str;
-    /* UNCHECKED */ MCStringCreateWithBytes((const byte_t*)t_char_ptr, strlen(t_char_ptr), kMCStringEncodingUTF8, false, &t_path_str);
-    
-	if (!dontappendname)
-	{
-		/* UNCHECKED */ MCStringFormat(r_path, "%@/%@", *t_path_str, *t_filename);
-	}
-    else
-    {
-        r_path = MCValueRetain(*t_path_str);
-    }
-	return true;
 }
 
 static void MCS_openresourcefork_with_fsref(FSRef *p_ref, SInt8 p_permission, bool p_create, SInt16 *r_fork_ref, MCStringRef& r_error)
@@ -3478,14 +3353,12 @@ struct MCMacSystemService: public MCMacSystemServiceInterface//, public MCMacDes
             FSSpec fspec;
             FSRef t_fsref;
             
-            if (MCS_mac_pathtoref(p_message, t_fsref) == noErr && MCS_mac_fsref_to_fsspec(&t_fsref, &fspec) == noErr)
+            if (MCS_mac_pathtoref(p_message, t_fsref) == noErr)
             {
                 AECreateList(NULL, 0, false, &files_list);
-                NewAlias(NULL, &fspec, &the_alias);
-                HLock((Handle)the_alias);
+                FSNewAlias(NULL, &t_fsref, &the_alias);
                 AECreateDesc(typeAlias, (Ptr)(*the_alias),
                              GetHandleSize((Handle)the_alias), &file_desc);
-                HUnlock((Handle) the_alias);
                 AEPutDesc(&files_list, 0, &file_desc);
                 AEPutParamDesc(&ae, keyDirectObject, &files_list);
                 docmessage = True;
@@ -4183,16 +4056,12 @@ struct MCMacDesktop: public MCSystemInterface, public MCMacSystemService
         /* UNCHECKED */ GetCurrentFolder(&dptr);
         if (MCStringGetLength(*dptr) <= 1)
         { // if root, then started from Finder
-            SInt16 vRefNum;
-            SInt32 dirID;
-            HGetVol(NULL, &vRefNum, &dirID);
-            FSSpec fspec;
-            FSMakeFSSpec(vRefNum, dirID, NULL, &fspec);
+            NSString* t_bundle_path;
+            t_bundle_path = [[NSBundle mainBundle] bundlePath];
+        
             MCAutoStringRef t_path;
-            MCAutoStringRef t_new_path;
-            /* UNCHECKED */ MCS_mac_FSSpec2path(&fspec, &t_path);
-            /* UNCHECKED */ MCStringFormat(&t_new_path, "%@%s", *t_path, "/../../../");
-            /* UNCHECKED */ SetCurrentFolder(*t_new_path);
+            /* UNCHECKED */ MCStringCreateWithCFString((CFStringRef)t_bundle_path, &t_path);
+            /* UNCHECKED */ SetCurrentFolder(*t_path);
         }
         
         MCS_reset_time();
@@ -8036,35 +7905,35 @@ static OSErr getAEAttributes(const AppleEvent *ae, AEKeyword key, MCStringRef &r
                 /* UNCHECKED */ MCStringCreateWithNativeCharsAndRelease((char_t*)FourCharCodeToString(t_type), 4, r_result);
 			}
                 break;
-            case typeShortInteger:
+            case typeSInt16:
 			{
 				int2 i;
 				AEGetAttributePtr(ae, key, dt, &rType, &i, s, &rSize);
                 /* UNCHECKED */ MCStringFormat(r_result, "%d", i);
 				break;
 			}
-            case typeLongInteger:
+            case typeSInt32:
 			{
 				int4 i;
 				AEGetAttributePtr(ae, key, dt, &rType, &i, s, &rSize);
                 /* UNCHECKED */ MCStringFormat(r_result, "%d", i);
 				break;
 			}
-            case typeShortFloat:
+            case typeIEEE32BitFloatingPoint:
 			{
 				real4 f;
 				AEGetAttributePtr(ae, key, dt, &rType, &f, s, &rSize);
                 /* UNCHECKED */ MCStringFormat(r_result, "%12.12g", f);
 				break;
 			}
-            case typeLongFloat:
+            case typeIEEE64BitFloatingPoint:
 			{
 				real8 f;
 				AEGetAttributePtr(ae, key, dt, &rType, &f, s, &rSize);
                 /* UNCHECKED */ MCStringFormat(r_result, "%12.12g", f);
 				break;
 			}
-            case typeMagnitude:
+            case typeUInt32:
 			{
 				uint4 i;
 				AEGetAttributePtr(ae, key, dt, &rType, &i, s, &rSize);
@@ -8074,6 +7943,7 @@ static OSErr getAEAttributes(const AppleEvent *ae, AEKeyword key, MCStringRef &r
             case typeNull:
                 r_result = MCValueRetain(kMCEmptyString);
                 break;
+#ifdef __32_BIT__
             case typeFSS:
 			{
 				FSSpec fs;
@@ -8081,6 +7951,7 @@ static OSErr getAEAttributes(const AppleEvent *ae, AEKeyword key, MCStringRef &r
 				/* UNCHECKED */ MCS_mac_FSSpec2path(&fs, r_result);
 			}
                 break;
+#endif
             case typeFSRef:
 			{
 				FSRef t_fs_ref;
@@ -8135,35 +8006,35 @@ static OSErr getAEParams(const AppleEvent *ae, AEKeyword key, MCStringRef &r_res
                 /* UNCHECKED */ MCStringCreateWithNativeCharsAndRelease((char_t*)FourCharCodeToString(t_type), 4, r_result);
 			}
                 break;
-            case typeShortInteger:
+            case typeSInt16:
 			{
 				int2 i;
 				AEGetParamPtr(ae, key, dt, &rType, &i, s, &rSize);
                 /* UNCHECKED */ MCStringFormat(r_result, "%d", i);
 				break;
 			}
-            case typeLongInteger:
+            case typeSInt32:
 			{
 				int4 i;
 				AEGetParamPtr(ae, key, dt, &rType, &i, s, &rSize);
                 /* UNCHECKED */ MCStringFormat(r_result, "%d", i);
 				break;
 			}
-            case typeShortFloat:
+            case typeIEEE32BitFloatingPoint:
 			{
 				real4 f;
 				AEGetParamPtr(ae, key, dt, &rType, &f, s, &rSize);
                 /* UNCHECKED */ MCStringFormat(r_result, "%12.12g", f);
 				break;
 			}
-            case typeLongFloat:
+            case typeIEEE64BitFloatingPoint:
 			{
 				real8 f;
 				AEGetParamPtr(ae, key, dt, &rType, &f, s, &rSize);
                 /* UNCHECKED */ MCStringFormat(r_result, "%12.12g", f);
 				break;
 			}
-            case typeMagnitude:
+            case typeUInt32:
 			{
 				uint4 i;
 				AEGetParamPtr(ae, key, dt, &rType, &i, s, &rSize);
@@ -8173,6 +8044,7 @@ static OSErr getAEParams(const AppleEvent *ae, AEKeyword key, MCStringRef &r_res
             case typeNull:
                 r_result = MCValueRetain(kMCEmptyString);
                 break;
+#ifdef __32_BIT__
             case typeFSS:
 			{
 				FSSpec fs;
@@ -8180,6 +8052,7 @@ static OSErr getAEParams(const AppleEvent *ae, AEKeyword key, MCStringRef &r_res
 				/* UNCHECKED */ MCS_mac_FSSpec2path(&fs, r_result);
 			}
                 break;
+#endif
             case typeFSRef:
 			{
 				FSRef t_fs_ref;
@@ -8544,9 +8417,7 @@ static void MCS_startprocess_launch(MCNameRef name, MCStringRef docname, Open_mo
 	AppleEvent ae;
 	
 	FSRef t_app_fsref;
-	FSSpec t_app_fsspec;
 	errno = MCS_mac_pathtoref(MCNameGetString(name), t_app_fsref);
-	errno = MCS_mac_fsref_to_fsspec(&t_app_fsref, &t_app_fsspec);
 	
 	uint2 i;
     
@@ -8591,12 +8462,13 @@ static void MCS_startprocess_launch(MCNameRef name, MCStringRef docname, Open_mo
 		if (i == MCnprocesses)
 		{
 			FInfo fndrInfo;
-			if ((errno = FSpGetFInfo(&t_app_fsspec, &fndrInfo)) != noErr)
+            FSCatalogInfo t_Info;
+            if ((errno = FSGetCatalogInfo(&t_app_fsref, kFSCatInfoFinderInfo, &t_Info, NULL, NULL, NULL)))
 			{
 				MCresult->sets("no such program");
 				return;
 			}
-			OSType creator = fndrInfo.fdCreator;
+            OSType creator = ((FileInfo*)t_Info.finderInfo)->fileCreator;
 			AECreateDesc(typeApplSignature, (Ptr)&creator, sizeof(OSType), &target);
 		}
 		else
@@ -8604,16 +8476,13 @@ static void MCS_startprocess_launch(MCNameRef name, MCStringRef docname, Open_mo
 			             sizeof(ProcessSerialNumber), &target);
 		AECreateAppleEvent('aevt', 'odoc', &target, kAutoGenerateReturnID,
 		                   kAnyTransactionID, &ae);
-		FSSpec fspec;
 		FSRef t_tmp_fsref;
-		if (MCS_mac_pathtoref(docname, t_tmp_fsref) == noErr && MCS_mac_fsref_to_fsspec(&t_tmp_fsref, &fspec) == noErr)
+		if (MCS_mac_pathtoref(docname, t_tmp_fsref) == noErr)
 		{
 			AECreateList(NULL, 0, false, &files_list);
-			NewAlias(NULL, &fspec, &the_alias);
-			HLock((Handle)the_alias);
+			FSNewAlias(NULL, &t_tmp_fsref, &the_alias);
 			AECreateDesc(typeAlias, (Ptr)(*the_alias),
 			             GetHandleSize((Handle)the_alias), &file_desc);
-			HUnlock((Handle)the_alias);
 			AEPutDesc(&files_list, 0, &file_desc);
 			AEPutParamDesc(&ae, keyDirectObject, &files_list);
 		}
@@ -8630,7 +8499,15 @@ static void MCS_startprocess_launch(MCNameRef name, MCStringRef docname, Open_mo
 	
 	if (errno != noErr)
 	{
-		launchParms.launchAppSpec = &t_app_fsspec;
+        // FG-2014-08-26: [[ 64-bit OSX ]] FSSpec has gone away
+#ifdef __32_BIT__
+		FSSpec t_app_fsspec;
+        errno = FSGetCatalogInfo(&t_app_fsref, kFSCatInfoNone, NULL, NULL, &t_app_fsspec, NULL);
+        if (errno == noErr)
+            launchParms.launchAppSpec = &t_app_fsspec;
+#else
+        launchParms.launchAppRef = &t_app_fsref;
+#endif
 		errno = LaunchApplication(&launchParms);
 		if (errno != noErr)
 		{
