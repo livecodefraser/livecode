@@ -1,0 +1,447 @@
+module com.livecode.theme.aeronative
+
+use com.livecode.canvas
+use com.livecode.foreign
+ 
+// Useful type aliases for Win32 platforms
+type HWND is pointer
+type HDC is pointer
+type HTHEME is pointer
+type HBITMAP is pointer
+type HGDIOBJ is pointer
+type LPCWSTR is pointer
+type HRESULT is int
+type COLORREF is uint
+type ULONG is uint
+type LOGFONTW is pointer		// NOT TRUE! But we don't have records yet.
+type RECT is data
+type LPCRECT is pointer
+
+foreign handler Win32_OpenThemeData(in hWnd as HWND, in pszClassList as LPCWSTR) as pointer binds to "UxTheme>OpenThemeData!stdcall"
+foreign handler Win32_CloseThemeData(in hTheme as HTHEME) as HRESULT binds to "UxTheme>CloseThemeData!stdcall"
+
+foreign handler Win32_GetThemeBitmap(in hTheme as HTHEME, in iPartId as int, in iStateId as int, in iPropId as int, out pfVal as HBITMAP) as HRESULT binds to "UxTheme>GetThemeBitmap!stdcall"
+foreign handler Win32_GetThemeBool(in hTheme as HTHEME, in iPartId as int, in iStateId as int, in iPropId as int, out pfVal as bool) as HRESULT binds to "UxTheme>GetThemeBool!stdcall"
+foreign handler Win32_GetThemeColor(in hTheme as HTHEME, in iPartId as int, in iStateId as int, in iPropId as int, in dwFlags as ULONG, out pfVal as COLORREF) as HRESULT binds to "UxTheme>GetThemeColor!stdcall"
+foreign handler Win32_GetThemeEnumValue(in hTheme as HTHEME, in iPartId as int, in iStateId as int, in iPropId as int, out piVal as int) as HRESULT binds to "UxTheme>GetThemeEnumValue!stdcall"
+foreign handler Win32_GetThemeFont(in hTheme as HTHEME, in iPartId as int, in iStateId as int, in iPropId as int, out pFont as LOGFONTW) as HRESULT binds to "UxTheme>GetThemeFont!stdcall"
+foreign handler Win32_GetThemeInt(in hTheme as HTHEME, in iPartId as int, in iStateId as int, in iPropId as int, out piVal as int) as HRESULT binds to "UxTheme>GetThemeInt!stdcall"
+foreign handler Win32_GetThemeMetric(in hTheme as HTHEME, in iPartId as int, in iStateId as int, in iPropId as int, out piVal as int) as HRESULT binds to "UxTheme>GetThemeMetric!stdcall"
+
+foreign handler Win32_DrawThemeBackground(in hTheme as HTHEME, in hDC as HDC, in iPartId as int, in iStateId as int, in pRect as LPCRECT, in pClipRect as LPCRECT) as HRESULT binds to "UxTheme>DrawThemeBackground"
+foreign handler Win32_IsThemeBackgroundPartiallyTransparent(in hTheme as HTHEME, in iPartId as int, in iStateId as int) as bool binds to "UxTheme>IsThemeBackgroundPartiallyTransparent"
+
+// Device context (DC) and bitmap management functions
+foreign handler Win32_GetDC(in hWnd as HWND) as HDC binds to "User32>GetDC"
+foreign handler Win32_ReleaseDC(in hWnd as HWND, in hDC as HDC) as int binds to "User32>ReleaseDC"
+foreign handler Win32_DeleteDC(in hDC as HDC) as bool binds to "Gdi32>DeleteDC"
+foreign handler Win32_CreateCompatibleDC(in hDC as HDC) as HDC binds to "Gdi32>CreateCompatibleDC"
+foreign handler Win32_CreateCompatibleBitmap(in hDC as HDC, in nWidth as int, in nHeight as int) as HBITMAP binds to "Gdi32>CreateCompatibleBitmap"
+foreign handler Win32_SelectObject(in hDC as HDC, in hGDIObj as HGDIOBJ) as HGDIOBJ binds to "Gdi32>SelectObject"
+foreign handler Win32_DeleteObject(in hGDIObj as HGDIOBJ) as bool binds to "Gdi32>DeleteObject"
+
+// Window management functions
+foreign handler Win32_DestroyWindow(in hWnd as HWND) as undefined binds to "User32>DestroyWindow"
+
+// A very long list of constants used by the Win32 visual styles API
+constant BP_PUSHBUTTON is 1
+constant BP_RADIOBUTTON is 2
+constant BP_CHECKBOX is 3
+constant BP_GROUPBOX is 4
+constant BP_USERBUTTON is 5
+constant BP_COMMANDLINK is 6
+constant BP_COMMANDLINKGLYPH is 7
+
+constant PBS_NORMAL is 1
+constant PBS_HOT is 2
+constant PBS_PRESSED is 3
+constant PBS_DISABLED is 4
+constant PBS_DEFAULTED is 5
+constant PBS_DEFAULTED_ANIMATING is 6
+
+constant RBS_UNCHECKEDNORMAL is 1
+constant RBS_UNCHECKEDHOT is 2
+constant RBS_UNCHECKEDPRESSED is 3
+constant RBS_UNCHECKEDDISABLED is 4
+constant RBS_CHECKEDNORMAL is 5
+constant RBS_CHECKEDHOT is 6
+constant RBS_CHECKEDPRESSED is 7
+constant RBS_CHECKEDDISABLED is 8
+
+constant CBS_UNCHECKEDNORMAL is 1
+constant CBS_UNCHECKEDHOT is 2
+constant CBS_UNCHECKEDPRESSED is 3
+constant CBS_UNCHECKEDDISABLED is 4
+constant CBS_CHECKEDNORMAL is 5
+constant CBS_CHECKEDHOT is 6
+constant CBS_CHECKEDPRESSED is 7
+constant CBS_CHECKEDDISABLED is 8
+constant CBS_MIXEDNORMAL is 9
+constant CBS_MIXEDHOT is 10
+constant CBS_MIXEDPRESSED is 11
+constant CBS_MIXEDDISABLED is 12
+constant CBS_IMPLICITNORMAL is 13
+constant CBS_IMPLICITHOT is 14
+constant CBS_IMPLICITPRESSED is 15
+constant CBS_IMPLICITDISABLED is 16
+constant CBS_EXCLUDEDNORMAL is 17
+constant CBS_EXCLUDEDHOT is 18
+constant CBS_EXCLUDEDPRESSED is 19
+constant CBS_EXCLUDEDDISABLED is 20
+
+constant PP_BAR is 1
+constant PP_BARVERT is 2
+constant PP_CHUNK is 3
+constant PP_CHUNKVERT is 4
+
+constant TMT_CAPTIONFONT is 801
+constant TMT_SMALLCAPTIONFONT is 802
+constant TMT_MENUFONT is 803
+constant TMT_STATUSFONT is 804
+constant TMT_MSGBOXFONT is 805
+constant TMT_ICONTITLEFONT is 806
+constant TMT_HEADING1FONT is 807
+constant TMT_HEADING2FONT is 808
+constant TMT_BODYFONT is 809
+
+
+// Utility functions built into the engine.
+//
+// The existence of these is (hopefully) very temporary - they should go away
+// when LCB supports this functionality natively.
+foreign handler MCWin32ThemeDrawThemeBackgroundToData(in hTheme as HTHEME, in hWnd as HWND, in iPartId as int, in iStateId as int, in nX as int, in iY as int, in nWidth as int, in nHeight as int, out rPixels as data) as bool binds to "<builtin>"
+foreign handler MCWin32ThemeCreateDummyWindow() as HWND binds to "<builtin>"
+foreign handler MCStringGetCharPtr(in pString as string) as LPCWSTR binds to "<builtin>"
+foreign handler MCWin32ThemeGetContentRect(in hTheme as HTHEME, in iPartId as int, in iStateId as int, in pWidth as int, in pHeight as int, out rX as int, out rY as int, out rWidth as int, out rHeight as int) as bool binds to "<builtin>"
+foreign handler MCWin32ThemeGetFont(in hTheme as HTHEME, in iPartId as int, in iStateId as int, in iWhichFont as int, out rFontName as string, out rFontSize as int) as bool binds to "<builtin>"
+
+// Window handle that we use for all the theming support
+variable g_hWnd as optional HWND
+
+// Array of Win32 theme handles
+variable g_ThemeHandles as optional array
+
+// -------------------------------------------------------------------------- //
+//     PUBLIC HANDLERS
+// -------------------------------------------------------------------------- //
+
+// Draws the background of a control using the current Windows visual style
+public handler Theme_AeroNative_DrawControlBackground(in pControlType as string, in pSubPart as string, in pStates as list, in pWidgetRect as Rectangle) as undefined
+	if not DrawThemeBackground(pControlType, pSubPart, pStates, pWidgetRect) then
+		throw "Unable to draw control type \q" & pControlType & "\q using the \qAeroNative\q theme"
+	end if
+end handler
+
+// Gets the location of the contents rectangle for the named control type
+public handler Theme_AeroNative_GetContentRectangle(in pControlType as string, in pWidgetRect as Rectangle) as Rectangle
+	variable hWnd as HWND
+	variable hTheme as HTHEME
+	variable iPartId as int
+	variable iStateId as int
+	variable tX as int
+	variable tY as int
+	variable tWidth as int
+	variable tHeight as int
+	if not ResolveSelector(pControlType, "", [], hWnd, hTheme, iPartId, iStateId) then
+		throw "Unable to get content rectangle for control type \q" & pControlType & "\q using the \qAeroNative\q theme"
+	end if
+	if not MCWin32ThemeGetContentRect(hTheme, iPartId, iStateId, (the width of pWidgetRect), (the height of pWidgetRect), tX, tY, tWidth, tHeight) then
+		throw "Unable to get content rectangle for control type \q" & pControlType & "\q using the \qAeroNative\q theme"
+	end if
+	
+	return rectangle [ tX, tY, tWidth, tHeight ]
+end handler
+
+// Gets the font information for a control
+public handler Theme_AeroNative_GetFont(in pControlType as string, in pSubPart as string, in pStates as list) as Font
+	variable tFont as Font
+	if not GetFont(pControlType, pSubPart, pStates, tFont) then
+		throw "Unable to get font information for control type \q" & pControlType & "\q using the \qAeroNative\q theme"
+	end if
+	return tFont
+end handler
+
+// Gets the colour to use for drawing text
+public handler Theme_AeroNative_GetTextColor(in pControlType as string, in pSubPart as string, in pStates as list) as Color
+	variable tColor as Color
+	if not GetTextColor(pControlType, pSubPart, pStates, tColor) then
+		throw "Unable to get text colour for control type \q" & pControlType & "\q using the \qAeroNative\q theme"
+	end if
+	return tColor
+end handler
+
+// -------------------------------------------------------------------------- //
+//      PRIVATE HANDLERS
+// -------------------------------------------------------------------------- //
+
+handler GetTextColor(in pControlType as string, in pSubPart as string, in pStates as list, out rColor as Color) as boolean
+	// Find which window, theme, sub-part and state we want to use
+	variable hTheme as HTHEME
+	variable hWnd as HWND
+	variable iPartId as int
+	variable iStateId as int
+	if not ResolveSelector(pControlType, pSubPart, pStates, hWnd, hTheme, iPartId, iStateId) then
+		return false
+	end if
+	
+	variable tRed as integer
+	variable tGreen as integer
+	variable tBlue as integer
+	if not MCWin32ThemeGetColor(hTheme, iPartId, iStateId, TMT_TEXTCOLOR, tRed, tGreen, tBlue) then
+		return false
+	end if
+	
+	put color [ tRed, tGreen, tBlue ] into rColor
+	return true
+end handler
+
+handler GetFont(in pControlType as string, in pSubPart as string, in pStates as list, out rFont as Font) as boolean
+	// Find which window, theme, sub-part and state we want to use
+	variable hTheme as HTHEME
+	variable hWnd as HWND
+	variable iPartId as int
+	variable iStateId as int
+	if not ResolveSelector(pControlType, pSubPart, pStates, hWnd, hTheme, iPartId, iStateId) then
+		return false
+	end if
+	
+	variable tFontName as string
+	variable tFontSize as int
+	if not MCWin32ThemeGetFont(hTheme, iPartId, iStateId, TMT_BODYFONT, tFontName, tFontSize) then
+		// Try again with a different font selector - most themed
+		// controls don't provide TMT_BODYFONT but Win32 controls tend
+		// to default to using the message box font for most purposes.
+		if not MCWin32ThemeGetFont(hTheme, iPartId, iStateId, TMT_MSGBOXFONT, tFontName, tFontSize) then
+			return false
+		end if
+	end if
+	
+	put font tFontName at size tFontSize into rFont
+	return true
+end handler
+
+handler DrawThemeBackground(in pControlType as string, in pSubPart as string, in pStates as list, in pWidgetRect as Rectangle) as boolean
+	// Find which window and {part, state} tuple we want to use
+	variable hTheme as HTHEME
+	variable hWnd as HWND
+	variable tPart as int
+	variable tState as int
+	if not ResolveSelector(pControlType, pSubPart, pStates, hWnd, hTheme, tPart, tState) then
+		return false
+	end if
+	
+	// If visual styles are not enabled, use the fall-back code path
+	// TODO: implement
+	if hTheme is not defined then
+		return false
+	end if
+	
+	// Because Win32 GDI doesn't support alpha channels properly, there are
+	// some complications with calculating the correct alpha values for
+	// controls (it involves drawing twice, on black then white, and
+	// comparing the two results pixel-by-pixel). We get the engine to do
+	// this because it is a bit too slow in LCB currently.
+	variable tPixels as data
+	if not MCWin32ThemeDrawThemeBackgroundToData(hTheme, hWnd, tPart, tState, (the x of pWidgetRect), (the y of pWidgetRect), (the width of pWidgetRect), (the height of pWidgetRect), tPixels) then
+		return false
+	end if
+	
+	// Create an image from this pixel data then draw it
+	variable tImage as Image
+	put image of size [ the width of pWidgetRect, the height of pWidgetRect ] with pixels tPixels into tImage
+	draw tImage into pWidgetRect of this canvas
+	
+	// Drawing complete
+	return true
+end handler
+
+handler ResolveSelector(in pControlType as string, in pSubPart as string, in pStates as list, out hWnd as HWND, out hTheme as HTHEME, out iPartId as int, out iStateId as int) as boolean
+	// Lower-case all the input strings
+	variable tIndex as integer
+	put the lower of pControlType into pControlType
+	repeat with tIndex from 1 up to the number of elements in pStates
+		put the lower of pStates[tIndex] into pStates[tIndex]
+	end repeat
+	
+	variable tSuccess as boolean
+	
+	// Switch based on the type of control
+	if pControlType is "pushbutton" then
+		put ResolveSelector_PushButton(pSubPart, pStates, hTheme, iPartId, iStateId) into tSuccess
+	else if pControlType is "radiobutton" then
+		put ResolveSelector_RadioButton(pSubPart, pStates, hTheme, iPartId, iStateId) into tSuccess
+	else if pControlType is "checkbox" then
+		put ResolveSelector_CheckBox(pSubPart, pStates, hTheme, iPartId, iStateId) into tSuccess
+	else if pControlType is "progressbar" then
+		put ResolveSelector_ProgressBar(pSubPart, pStates, hTheme, iPartId, iStateId) into tSuccess
+	else
+		// The requested control type is not supported
+		put false into tSuccess
+	end if
+	
+	// The window handle is always the same
+	if tSuccess then
+		put GetHWnd() into hWnd
+	end if
+	
+	return tSuccess
+end handler
+
+handler ResolveSelector_PushButton(in pSubPart as string, in pStates as list, out hTheme as HTHEME, out iPartId as int, out iStateId as int) as boolean
+	// The theme and sub-part is fixed for push buttons
+	put GetHTHEMEForClass("Button") into hTheme
+	put BP_PUSHBUTTON into iPartId
+	
+	// The "disabled" state always takes precedence
+	if "disabled" is in pStates then
+		put PBS_DISABLED into iStateId
+	// Next in precedence is the "pressed" state
+	else if "pressed" is in pStates then
+		put PBS_PRESSED into iStateId
+	// Then comes the "hovered" state
+	else if "hover" is in pStates then
+		put PBS_HOT into iStateId
+	// Finally comes being the default button
+	else if "default" is in pStates then
+		put PBS_DEFAULTED into iStateId
+	// No special state
+	else
+		put PBS_NORMAL into iStateId
+	end if
+	
+	return true
+end handler
+
+handler ResolveSelector_RadioButton(in pSubPart as string, in pStates as list, out hTheme as HTHEME, out iPartId as int, out iStateId as int) as boolean
+	// The theme and sub-part is fixed for radio buttons
+	put GetHTHEMEForClass("Button") into hTheme
+	put BP_RADIOBUTTON into iPartId
+	
+	// The primary state factor is whether the button is checked or not. We
+	// take advantage of the fact that the Win32 states are consecutive...
+	variable tStateId as integer
+	if "checked" is in pStates then
+		put RBS_CHECKEDNORMAL into tStateId
+	else
+		put RBS_UNCHECKEDNORMAL into tStateId
+	end if
+	
+	// Disabled takes priority over other input states
+	if "disabled" is in pStates then
+		add (RBS_CHECKEDDISABLED - RBS_CHECKEDNORMAL) to tStateId
+	// Then pressed
+	else if "pressed" is in pStates then
+		add (RBS_CHECKEDPRESSED - RBS_CHECKEDNORMAL) to tStateId
+	// Then hovered
+	else if "hover" is in pStates then
+		add (RBS_CHECKEDHOT - RBS_CHECKEDNORMAL) to tStateId
+	else
+		// No change
+	end if
+	
+	put tStateId into iStateId
+	return true
+end handler
+
+handler ResolveSelector_CheckBox(in pSubPart as string, in pStates as list, out hTheme as HTHEME, out iPartId as int, out iStateId as int) as boolean
+	// The theme and sub-part is fixed for checkboxes
+	put GetHTHEMEForClass("Button") into hTheme
+	put BP_CHECKBOX into iPartId
+	
+	// Like for radio buttons, we take advantage of the fact that all of the
+	// Win32 states are divided into groups of 4 based on the checked-ness
+	// of the box. Decide that now.
+	variable tStateId as integer
+	if "implicit" is in pStates then
+		// Implied by some other option
+		put CBS_IMPLICITNORMAL into tStateId
+	else if "checked" is in pStates then
+		// Ticked
+		put CBS_CHECKEDNORMAL into tStateId
+	else if "unchecked" is in pStates then
+		// Unticked
+		put CBS_UNCHECKEDNORMAL into tStateId
+	else if "excluded" is in pStates then
+		// Forbidden by some other option
+		put CBS_EXCLUDEDNORMAL into tStateId
+	else
+		// Indeterminate/mixed state
+		put CBS_MIXEDNORMAL into tStateId
+	end if
+	
+	// Disabled takes priority over other input states
+	if "disabled" is in pStates then
+		add (RBS_CHECKEDDISABLED - RBS_CHECKEDNORMAL) to tStateId
+	// Then pressed
+	else if "pressed" is in pStates then
+		add (RBS_CHECKEDPRESSED - RBS_CHECKEDNORMAL) to tStateId
+	// Then hovered
+	else if "hover" is in pStates then
+		add (RBS_CHECKEDHOT - RBS_CHECKEDNORMAL) to tStateId
+	else
+		// No change
+	end if
+	
+	put tStateId into iStateId
+	return true
+end handler
+
+handler ResolveSelector_ProgressBar(in pSubPart as string, in pStates as list, out hTheme as HTHEME, out iPartId as int, out iStateId as int) as boolean
+	// The theme handle and state are fixed for progress bars
+	put GetHTHEMEForClass("Progress") into hTheme
+	put 0 into iStateId
+	
+	// Which sub-part of the progress bar are we drawing?
+	if pSubPart is empty or pSubPart is "background" then
+		put PP_BAR into iPartId
+	else if pSubPart is "chunks" or pSubPart is "fill" then
+		put PP_CHUNK into iPartId
+	else
+		// Unknown sub-part
+		return false
+	end if
+	
+	return true
+end handler
+
+handler GetHWnd() as HWND
+	// Create the hWnd if not already done
+	if g_hWnd is not defined then
+		put MCWin32ThemeCreateDummyWindow() into g_hWnd
+	end if
+	
+	return g_hWnd
+end handler
+
+handler GetHTHEMEForClass(in pClass as string) as HTHEME
+	// Create the array, if necessary
+	if g_ThemeHandles is not defined then
+		put the empty array into g_ThemeHandles
+	end if
+	
+	// Check to see if a handle has already been opened for this class
+	if pClass is not among the keys of g_ThemeHandles then
+		// Open the theme and insert its handle
+		put Win32_OpenThemeData(GetHWnd(), MCStringGetCharPtr(pClass)) into g_ThemeHandles[pClass]
+	end if
+	
+	return g_ThemeHandles[pClass]
+end handler
+
+// Cleans up the Win32 theming state. Not that anything calls it yet...
+handler CleanUp() as undefined
+	// Close all of the theme handles 
+	if g_ThemeHandles is defined then
+		variable hTheme as HTHEME
+		repeat for each element hTheme in g_ThemeHandles
+			Win32_CloseThemeData(hTheme)
+		end repeat
+	end if
+	
+	// Destroy the window, if we created one
+	if g_hWnd is defined then
+		Win32_DestroyWindow(g_hWnd)
+	end if
+end handler
+
+end module

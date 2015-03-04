@@ -49,6 +49,7 @@ extern "C"
     extern builtin_module_descriptor __com_livecode_canvas_module_info;
     extern builtin_module_descriptor __com_livecode_engine_module_info;
     extern builtin_module_descriptor __com_livecode_widget_module_info;
+	extern builtin_module_descriptor __com_livecode_theme_aeronative_module_info;
     
     builtin_module_descriptor* g_builtin_modules[] =
     {
@@ -77,6 +78,7 @@ extern "C"
         &__com_livecode_canvas_module_info,
         &__com_livecode_engine_module_info,
         &__com_livecode_widget_module_info,
+		&__com_livecode_theme_aeronative_module_info,
     };
     
     unsigned int g_builtin_module_count = sizeof(g_builtin_modules) / sizeof(builtin_module_descriptor*);
@@ -101,6 +103,7 @@ extern "C"
     extern void (*MCWidgetExecRedrawAll)();
     extern void (*MCEngineExecResolveScriptObject)();
     extern void (*MCCanvasThisCanvas)();
+	extern void (*MCWin32ThemeDrawThemeBackgroundToData)();
     
     // Pull in a reference to all of the module-*.cpp objects too
     void *g_builtin_ptrs[] =
@@ -125,6 +128,9 @@ extern "C"
         &MCWidgetExecRedrawAll,
         &MCCanvasThisCanvas,
         &MCEngineExecResolveScriptObject,
+#ifdef _WINDOWS
+		&MCWin32ThemeDrawThemeBackgroundToData,
+#endif
     };
     
 }

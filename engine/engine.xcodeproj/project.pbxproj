@@ -485,6 +485,7 @@
 		4DFFC7E013DD8A91006233A4 /* syscfdate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DFFC7DE13DD8A91006233A4 /* syscfdate.cpp */; };
 		4DFFC7E113DD8A91006233A4 /* sysunxnetwork.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DFFC7DF13DD8A91006233A4 /* sysunxnetwork.cpp */; };
 		4DFFC7E713DD8AB9006233A4 /* objectpropsets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DFFC7E613DD8AB9006233A4 /* objectpropsets.cpp */; };
+		7203EEFD1AA4CF4C0027B4AD /* theme-aero-native.mlc in Sources */ = {isa = PBXBuildFile; fileRef = 7203EEF81AA4AF510027B4AD /* theme-aero-native.mlc */; };
 		7210DD551A374F6700C23D23 /* module-canvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D79B72E1A275AA500DD750C /* module-canvas.cpp */; };
 		721CAAC118351E1800858545 /* libicui18n.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 721CAAC018351E1800858545 /* libicui18n.a */; };
 		721CAAC818351E7400858545 /* libicudata.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 721CAAC218351E7400858545 /* libicudata.a */; };
@@ -2220,6 +2221,7 @@
 		4DFFC7DE13DD8A91006233A4 /* syscfdate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syscfdate.cpp; path = src/syscfdate.cpp; sourceTree = "<group>"; };
 		4DFFC7DF13DD8A91006233A4 /* sysunxnetwork.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sysunxnetwork.cpp; path = src/sysunxnetwork.cpp; sourceTree = "<group>"; };
 		4DFFC7E613DD8AB9006233A4 /* objectpropsets.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = objectpropsets.cpp; path = src/objectpropsets.cpp; sourceTree = "<group>"; };
+		7203EEF81AA4AF510027B4AD /* theme-aero-native.mlc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "theme-aero-native.mlc"; path = "src/modules/theming/theme-aero-native.mlc"; sourceTree = "<group>"; };
 		720E34F519F56FE700EA00ED /* native-layer-ios.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "native-layer-ios.mm"; path = "src/native-layer-ios.mm"; sourceTree = "<group>"; };
 		720E34F619F56FE700EA00ED /* native-layer-ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "native-layer-ios.h"; path = "src/native-layer-ios.h"; sourceTree = "<group>"; };
 		721CAAC018351E1800858545 /* libicui18n.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicui18n.a; path = ../prebuilt/lib/mac/libicui18n.a; sourceTree = "<group>"; };
@@ -2281,6 +2283,7 @@
 		7269ECCC1A1E4BAF000723DB /* text-block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "text-block.h"; path = "src/text-block.h"; sourceTree = "<group>"; };
 		7269ECCE1A1E507C000723DB /* text-paragraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "text-paragraph.cpp"; path = "src/text-paragraph.cpp"; sourceTree = "<group>"; };
 		7269ECCF1A1E507C000723DB /* text-paragraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "text-paragraph.h"; path = "src/text-paragraph.h"; sourceTree = "<group>"; };
+		729D10C81A9B57AF00B0CA0F /* module-theme-win32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "module-theme-win32.cpp"; path = "src/modules/theming/module-theme-win32.cpp"; sourceTree = "<group>"; };
 		72A534221A27956B00B1BFBB /* text-api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "text-api.cpp"; path = "src/text-api.cpp"; sourceTree = "<group>"; };
 		72A534231A27956B00B1BFBB /* text-api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "text-api.h"; path = "src/text-api.h"; sourceTree = "<group>"; };
 		72B67C501A0BBDF600BB2594 /* mac-theme.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "mac-theme.mm"; path = "src/mac-theme.mm"; sourceTree = "<group>"; };
@@ -3205,6 +3208,7 @@
 		4D79B7291A275A7C00DD750C /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				7203EEF81AA4AF510027B4AD /* theme-aero-native.mlc */,
 				C77AA9811A83868600AAE40E /* libkernel-modules.list */,
 				4DD9D7661A3B185A0006366D /* engine.mlc */,
 				4D79B8AA1A37104800DD750C /* widget.mlc */,
@@ -3217,6 +3221,7 @@
 				4DD9D7891A3B3BFB0006366D /* module-engine.h */,
 				E8CFD7231A8231D10073D392 /* module-resources.cpp */,
 				E8CFD7251A8231FC0073D392 /* module-resources.h */,
+				729D10C81A9B57AF00B0CA0F /* module-theme-win32.cpp */,
 			);
 			name = Modules;
 			sourceTree = "<group>";
@@ -5300,6 +5305,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7203EEFD1AA4CF4C0027B4AD /* theme-aero-native.mlc in Sources */,
 				4D79B7321A275B2900DD750C /* canvas.mlc in Sources */,
 				4DD9D7871A3B22E60006366D /* module-engine.cpp in Sources */,
 				4DD9D7671A3B1EA10006366D /* engine.mlc in Sources */,

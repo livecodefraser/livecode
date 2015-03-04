@@ -8179,6 +8179,26 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\generated\theme-aero-native.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\generated\widget.c"
 					>
 					<FileConfiguration
@@ -8201,6 +8221,18 @@
 							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 						/>
 					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="Theming"
+				>
+				<File
+					RelativePath=".\src\modules\theming\module-theme-win32.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\modules\theming\theme-aero-native.mlc"
+					>
 				</File>
 			</Filter>
 		</Filter>
