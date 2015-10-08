@@ -3,7 +3,10 @@
 use warnings;
 use File::Basename;
 
-# Incoming arguments
+# Incoming arguments. The basename function is applied to the
+# varName parameter to work around a Gyp bug on Windows where
+# it incorrectly interprets the parameter as a path and adds
+# a relative path in front of the name.
 my $sourceFile	= $ARGV[0];
 my $destFile	= $ARGV[1];
 my $varName	= basename($ARGV[2]);
