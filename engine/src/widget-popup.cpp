@@ -117,7 +117,7 @@ public:
 		
 		// Draw the widget
 		if (m_widget != nil)
-			m_widget->draw(dc, dirty, true, false);
+			m_widget->Draw(dc, dirty, true, false);
 	}
 	
 	//////////

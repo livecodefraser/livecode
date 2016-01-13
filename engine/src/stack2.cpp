@@ -3209,7 +3209,7 @@ void MCStack::render(MCContext *p_context, const MCRectangle& p_dirty)
     if (m_is_menu && (menuheight > rect . height || menuy != 0))
         clipmenu(p_context, t_clipped_visible);
     
-    curcard -> draw(p_context, t_clipped_visible, false);
+    curcard -> Draw(p_context, t_clipped_visible, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

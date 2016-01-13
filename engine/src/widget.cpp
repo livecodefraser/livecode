@@ -776,12 +776,9 @@ MCControl *MCWidget::clone(Boolean p_attach, Object_pos p_position, bool invisib
 	return t_new_widget;
 }
 
-void MCWidget::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite)
+void MCWidget::DrawPrepare(MCDC *dc, MCRectangle& x_dirty, bool p_isolated, bool p_sprite)
 {
-	MCRectangle dirty;
-	dirty = p_dirty;
-	
-	if (!p_isolated)
+    if (!p_isolated)
 	{
 		if (!p_sprite)
 		{
@@ -795,10 +792,18 @@ void MCWidget::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
 		{
 			if (!dc -> begin_with_effects(m_bitmap_effects, MCU_reduce_rect(rect, -gettransient())))
 				return;
-			dirty = dc -> getclip();
+			x_dirty = dc -> getclip();
 		}
 	}
+}
 
+void MCWidget::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+    
+void MCWidget::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
     if (m_widget != nil)
     {
         if (dc -> gettype() != CONTEXT_TYPE_PRINTER)
@@ -815,8 +820,8 @@ void MCWidget::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
             // Create a raster to draw into.
             MCGRaster t_raster;
             t_raster . format = kMCGRasterFormat_ARGB;
-            t_raster . width = dirty . width;
-            t_raster . height = dirty . height;
+            t_raster . width = p_dirty . width;
+            t_raster . height = p_dirty . height;
             t_raster . stride = t_raster . width * sizeof(uint32_t);
             if (t_success)
                 t_success = MCMemoryAllocate(t_raster . height * t_raster . stride, t_raster . pixels);
@@ -833,7 +838,7 @@ void MCWidget::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
             t_image = nil;
             if (t_success)
             {
-                MCGContextTranslateCTM(t_gcontext, -dirty . x, -dirty . y);
+                MCGContextTranslateCTM(t_gcontext, -p_dirty . x, -p_dirty . y);
                 
                 MCGContextSave(t_gcontext);
                 MCwidgeteventmanager->event_paint(this, t_gcontext);
@@ -850,7 +855,7 @@ void MCWidget::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
                 memset(&t_descriptor, 0, sizeof(MCImageDescriptor));
                 t_descriptor . image = t_image;
                 t_descriptor . x_scale = t_descriptor . y_scale = 1.0;
-                dc -> drawimage(t_descriptor, 0, 0, dirty . width, dirty . height, dirty . x, dirty . y);
+                dc -> drawimage(t_descriptor, 0, 0, p_dirty . width, p_dirty . height, p_dirty . x, p_dirty . y);
             }
             
             MCGContextRelease(t_gcontext);
@@ -863,11 +868,19 @@ void MCWidget::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
         setforeground(dc, DI_BACK, False);
         dc->setbackground(MCscreen->getwhite());
         dc->setfillstyle(FillOpaqueStippled, nil, 0, 0);
-        dc->fillrect(dirty);
+        dc->fillrect(p_dirty);
         dc->setbackground(MCzerocolor);
         dc->setfillstyle(FillSolid, nil, 0, 0);
     }
+}
+
+void MCWidget::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
     
+}
+
+void MCWidget::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (!p_isolated)
 	{
 		dc -> end();

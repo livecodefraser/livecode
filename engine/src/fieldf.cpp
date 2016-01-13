@@ -1199,7 +1199,7 @@ void MCField::drawrect(MCDC *dc, const MCRectangle &dirty)
 			dc->cliprect(hrect);
 			
 			// MW-2011-09-06: [[ Redraw ]] Render the scrollbar normally (not as a sprite).
-			hscrollbar->draw(dc, hrect, false, false);
+			hscrollbar->Draw(dc, hrect, false, false);
 			
 			dc->restore();
 		}
@@ -1213,7 +1213,7 @@ void MCField::drawrect(MCDC *dc, const MCRectangle &dirty)
 			dc->cliprect(vrect);
 			
 			// MW-2011-09-06: [[ Redraw ]] Render the scrollbar normally (not as a sprite).
-			vscrollbar->draw(dc, vrect, false, false);
+			vscrollbar->Draw(dc, vrect, false, false);
 			
 			dc->restore();
 		}

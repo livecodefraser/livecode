@@ -495,8 +495,13 @@ MCControl *MCEPS::clone(Boolean attach, Object_pos p, bool invisible)
 	return neweps;
 }
 
+void MCEPS::DrawPrepare(MCDC *dc, MCRectangle &x_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
 // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCEPS::draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite)
+void MCEPS::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite)
 {
 	MCRectangle trect = rect;
 	if (flags & F_SHOW_BORDER)
@@ -507,7 +512,15 @@ void MCEPS::draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_spr
 		setforeground(dc, DI_BACK, False);
 		dc->fillrect(trect);
 	}
-	if (state & (CS_SIZE | CS_MOVE))
+}
+
+void MCEPS::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    MCRectangle trect = rect;
+    if (flags & F_SHOW_BORDER)
+        trect = MCU_reduce_rect(trect, borderwidth);
+    
+    if (state & (CS_SIZE | CS_MOVE))
 	{
 		dc->setlineatts(0, LineDoubleDash, CapButt, JoinBevel);
 		dc->setforeground(dc->getblack());
@@ -555,18 +568,32 @@ void MCEPS::draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_spr
 		            fontname, fontsize, fontstyle, font, trect);
 	}
 #endif
+}
 
-	if (flags & F_SHOW_BORDER)
+void MCEPS::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    MCRectangle trect = rect;
+    if (flags & F_SHOW_BORDER)
+        trect = MCU_reduce_rect(trect, borderwidth);
+    
+    if (flags & F_SHOW_BORDER)
 		trect = MCU_reduce_rect(trect, -borderwidth);
 	if (flags & F_SHOW_BORDER)
+    {
 		if (flags & F_3D)
 			draw3d(dc, trect, ETCH_SUNKEN, borderwidth);
 		else
 			drawborder(dc, trect, borderwidth);
+    }
 	if (getstate(CS_KFOCUSED))
-		drawfocus(dc, dirty);
+		drawfocus(dc, p_dirty);
 	if (state & CS_SELECTED)
 		drawselected(dc);
+}
+
+void MCEPS::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
 }
 
 IO_stat MCEPS::load(IO_handle stream, uint32_t version)

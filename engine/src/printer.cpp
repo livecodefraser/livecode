@@ -742,7 +742,7 @@ void MCPrinter::DoPrint(MCCard *p_card, const MCRectangle& p_src, const MCRectan
 		// Draw the card into the context.
 		if (m_loop_status == STATUS_READY)
 		{
-			p_card -> draw(t_context, p_src, false);
+			p_card -> Draw(t_context, p_src, false);
 			if (m_layout_show_borders)
 				p_card -> drawborder(t_context, p_src, 1);
 			SetStatusFromResult(m_device -> End(t_context));

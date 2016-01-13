@@ -110,7 +110,11 @@ public:
 
     virtual void scheduledelete(bool p_is_child);
     
-	void draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated);
+    //void draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated);
+    void Draw(MCDC* dc, const MCRectangle& p_dirty, bool p_isolated);
+    void DrawBackgroundLegacy(MCDC* dc, const MCRectangle& p_dirty, bool p_isolated);
+    void DrawContentsLegacy(MCDC* dc, const MCRectangle& p_dirty, bool p_isolated);
+    void DrawForegroundLegacy(MCDC* dc, const MCRectangle& p_dirty, bool p_isolated);
 
 	MCObject *hittest(int32_t x, int32_t y);
 	

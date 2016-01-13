@@ -46,12 +46,9 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 #include "graphics_util.h"
 
 // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCButton::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite)
+void MCButton::DrawPrepare(MCDC *dc, MCRectangle& x_dirty, bool p_isolated, bool p_sprite)
 {
-	MCRectangle dirty;
-	dirty = p_dirty;
-
-	if (!p_isolated)
+    if (!p_isolated)
 	{
 		// MW-2011-09-06: [[ Redraw ]] If rendering as a sprite, don't change opacity or ink.
 		if (!p_sprite)
@@ -67,37 +64,45 @@ void MCButton::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
 		{
 			if (!dc -> begin_with_effects(m_bitmap_effects, MCU_reduce_rect(rect, -gettransient())))
 				return;
-			dirty = dc -> getclip();
+			x_dirty = dc -> getclip();
 		}
 	}
+}
 
-	MCRectangle shadowrect;
-	shadowrect = rect;
-	
-	MCRectangle t_content_rect;
-	t_content_rect = rect;
-	
+MCRectangle MCButton::GetShadowRect()
+{
+    MCRectangle shadowrect = rect;
+    
+    if (labelwidth != 0)
+    {
+        shadowrect.x += labelwidth;
+        shadowrect.width -= labelwidth;
+    }
+    if (flags & F_SHADOW)
+    {
+        if ((signed char)shadowoffset < 0)
+        {
+            shadowrect.x -= shadowoffset;
+            shadowrect.y -= shadowoffset;
+            shadowrect.width += shadowoffset;
+            shadowrect.height += shadowoffset;
+        }
+        else
+        {
+            shadowrect.width -= shadowoffset;
+            shadowrect.height -= shadowoffset;
+        }
+    }
+    
+    return shadowrect;
+}
+
+void MCButton::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    MCRectangle shadowrect = GetShadowRect();
+    MCRectangle t_content_rect = rect;
 	uint2 loff = 0;
-	if (labelwidth != 0)
-	{
-		shadowrect.x += labelwidth;
-		shadowrect.width -= labelwidth;
-	}
-	if (flags & F_SHADOW)
-	{
-		if ((signed char)shadowoffset < 0)
-		{
-			shadowrect.x -= shadowoffset;
-			shadowrect.y -= shadowoffset;
-			shadowrect.width += shadowoffset;
-			shadowrect.height += shadowoffset;
-		}
-		else
-		{
-			shadowrect.width -= shadowoffset;
-			shadowrect.height -= shadowoffset;
-		}
-	}
+	
 	Boolean indicator = getstyleint(flags) == F_CHECK
 	                    || getstyleint(flags) == F_RADIO;
 	if (needfocus())
@@ -113,14 +118,15 @@ void MCButton::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
 	if (entry != NULL)
 	{
 		drawcombo(dc, shadowrect);
-		entry->draw(dc, dirty, false, false);
+        
+        // We use legacy drawing for the combo box' field as a themed field
+        // underneath a non-themed button might look rather strange.
+        MCRectangle t_entry_rect = p_dirty;
+        entry->DrawPrepare(dc, t_entry_rect, false, false);
+		entry->DrawBackgroundLegacy(dc, t_entry_rect, false, false);
 	}
 	else
 	{
-		int2 centerx =  shadowrect.x + leftmargin
-		                + ((shadowrect.width - leftmargin - rightmargin) >> 1);
-		int2 centery =  shadowrect.y + topmargin
-		                + ((shadowrect.height - topmargin - bottommargin) >> 1);
 		uint2 style = getstyleint(flags);
 		Boolean macoption = IsMacEmulatedLF() && style == F_MENU
 		                    && (menumode == WM_OPTION || menumode == WM_COMBO);
@@ -135,14 +141,14 @@ void MCButton::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
 
 		if (style == F_MENU && menumode == WM_PULLDOWN && MCcurtheme != NULL &&
 			getstack() -> hasmenubar() && getparent() -> hasname(getstack() -> getmenubar()) &&
-			MCcurtheme -> drawmenuheaderbackground(dc, dirty, this))
+			MCcurtheme -> drawmenuheaderbackground(dc, p_dirty, this))
 		{
 			t_themed_menu = true;
             //dc -> setforeground(getflag(F_DISABLED) ? dc -> getgray() : dc -> getblack());
             setforeground(dc, DI_PSEUDO_BUTTON_TEXT, False);
 		}
 		else if (menucontrol != MENUCONTROL_NONE && MCcurtheme != NULL &&
-				MCcurtheme -> drawmenuitembackground(dc, dirty, this))
+				MCcurtheme -> drawmenuitembackground(dc, p_dirty, this))
 		{
 			t_themed_menu = true;
 			indicator = False;
@@ -187,7 +193,7 @@ void MCButton::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
 			case F_RECTANGLE:
 			case F_STANDARD:
 					if (MCcurtheme == NULL || !getstack() -> ismetal() || (isstdbtn && state & CS_HILITED) ||
-						!MCcurtheme -> drawmetalbackground(dc, dirty, trect, this))
+						!MCcurtheme -> drawmetalbackground(dc, p_dirty, trect, this))
 				{
 					if (isstdbtn && noback)
 					{
@@ -370,16 +376,62 @@ void MCButton::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
 				                            || style != F_STANDARD), False);
         }
 		}
+    }
+}
 
-		// MW-2009-06-14: We will assume (perhaps unwisely) that is 'opaque' is set
-		//   then the background is now, completely opaque.
-		bool t_was_opaque;
-		if (getflag(F_OPAQUE))
-			t_was_opaque = dc -> changeopaque(true);
-
+void MCButton::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    MCRectangle shadowrect = GetShadowRect();
+    MCRectangle t_content_rect = rect;
+    
+    uint2 i;
+    bool indicator = getstyleint(flags) == F_CHECK || getstyleint(flags) == F_RADIO;
+    bool isstdbtn = standardbtn();
+    bool noback = isstdbtn && !getcindex(DI_BACK, i) && !getpindex(DI_BACK, i);
+    
+    uint2 style = getstyleint(flags);
+    
+    uint2 loff = 0;
+    if (flags & F_3D && MClook == LF_WIN95
+        && state & CS_HILITED && (style == F_STANDARD
+                                  || indicator && flags & F_SHOW_ICON))
+        loff = 1;
+    
+    int2 centerx =  shadowrect.x + leftmargin + ((shadowrect.width - leftmargin - rightmargin) >> 1);
+    int2 centery =  shadowrect.y + topmargin + ((shadowrect.height - topmargin - bottommargin) >> 1);
+    
+    bool t_isvista = MCmajorosversion >= 0x0600 && MCcurtheme != NULL;
+    bool macoption = IsMacEmulatedLF() && style == F_MENU && (menumode == WM_OPTION || menumode == WM_COMBO);
+    bool white = MClook != LF_MOTIF && !macoption && !(t_isvista && style == F_MENU && menumode == WM_OPTION)
+    && (style == F_MENU && (menumode == WM_OPTION || menumode == WM_COMBO)
+        || flags & F_AUTO_ARM && state & CS_ARMED
+        && !(flags & F_SHOW_BORDER));
+    
+    // Not for comboboxes
+    if (entry == NULL)
+    {
 		MCStringRef t_label = getlabeltext();
 		Boolean icondrawed = False;
-		
+        
+        bool t_themed_menu = false;
+        if (style == F_MENU && menumode == WM_PULLDOWN && MCcurtheme != NULL &&
+            getstack() -> hasmenubar() && getparent() -> hasname(getstack() -> getmenubar()) &&
+            MCcurtheme -> candrawmenuheaderbackground())
+        {
+            t_themed_menu = true;
+            //dc -> setforeground(getflag(F_DISABLED) ? dc -> getgray() : dc -> getblack());
+            setforeground(dc, DI_PSEUDO_BUTTON_TEXT, False);
+        }
+        else if (menucontrol != MENUCONTROL_NONE && MCcurtheme != NULL &&
+                 MCcurtheme -> candrawmenuitembackground())
+        {
+            t_themed_menu = true;
+            indicator = False;
+            //dc -> setforeground(getflag(F_DISABLED) ? dc -> getgray() : dc -> getblack());
+            setforeground(dc, DI_PSEUDO_BUTTON_TEXT, False);
+        }
+        
+        
         // SN-2014-08-12: [[ Bug 13155 ]] Don't try to draw the icons if the button has not got any
         // SN-2014-12-17: [[ Bug 14249 ]] Do not try to draw the curicon if there is no current
         //  icon (as it may after loading a stack).
@@ -573,7 +625,7 @@ void MCButton::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
                 drawdirectionaltext(dc, rect.x + leftmargin, starty, t_name, m_font);
 			}
 
-			// MW-2012-01-27: [[ Bug 9432 ]] Native GTK handles focus borders itself
+            // MW-2012-01-27: [[ Bug 9432 ]] Native GTK handles focus borders itself
 			//   so don't render the win95-style one.
 			if (MClook == LF_WIN95 && !IsNativeGTK() && state & CS_KFOCUSED && !(flags & F_AUTO_ARM) && !white)
 			{
@@ -631,12 +683,24 @@ void MCButton::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
 		if (!icondrawed &&flags & F_SHOW_ICON && icons != NULL && icons->curicon != NULL)
 			icons->curicon->drawcentered(dc, centerx + loff, centery + loff,
 			                             (state & CS_HILITED) != 0);
-	
-		// MW-2009-06-14: Reset opaqueness
-		if (getflag(F_OPAQUE))
-			dc -> changeopaque(t_was_opaque);
 	}
+    else
+    {
+        // Combo box rendering
+        entry->DrawContentsLegacy(dc, p_dirty, false, false);
+        entry->DrawForegroundLegacy(dc, p_dirty, false, false);
+        entry->DrawFinish(dc, p_dirty, false, false);
+    }
+}
 
+void MCButton::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    // The highlight drawing code should really go in here but it is very
+    // difficult to tease apart the button drawing code.
+}
+
+void MCButton::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (!p_isolated)
 	{
 		dc -> end();

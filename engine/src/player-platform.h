@@ -125,7 +125,11 @@ public:
 	virtual void deselect(void);
     
 	// MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-	virtual void draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawPrepare(MCDC *dc, MCRectangle &x_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
     
 	// virtual functions from MCControl
 	IO_stat load(IO_handle stream, uint32_t version);

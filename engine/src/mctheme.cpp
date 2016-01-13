@@ -109,6 +109,26 @@ bool MCTheme::settooltiptextcolor(MCContext *context)
 	return false;
 }
 
+bool MCTheme::candrawmenubackground()
+{
+    return false;
+}
+
+bool MCTheme::candrawmenubarbackground()
+{
+    return false;
+}
+
+bool MCTheme::candrawmenuheaderbackground()
+{
+    return false;
+}
+
+bool MCTheme::candrawmenuitembackground()
+{
+    return false;
+}
+
 bool MCTheme::drawmenubackground(MCContext *context, const MCRectangle& dirty, const MCRectangle& rect, bool with_gutter)
 {
 	return false;

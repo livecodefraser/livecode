@@ -425,7 +425,11 @@ public:
 	bool lockbitmapshape(const MCRectangle &p_bounds, const MCPoint &p_origin, MCObjectShape &r_shape);
 
 	// MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-	virtual void draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawPrepare(MCDC *dc, MCRectangle &x_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
 	
 	// MW-2012-03-28: [[ Bug 10130 ]] No-op for images as there is no font.
 	virtual bool recomputefonts(MCFontRef parent_font, bool force);

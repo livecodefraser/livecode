@@ -247,8 +247,18 @@ MCControl *MCColors::clone(Boolean attach, Object_pos p, bool invisible)
 	return newcolors;
 }
 
+void MCColors::DrawPrepare(MCDC *dc, MCRectangle &x_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
+void MCColors::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
 // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCColors::draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite)
+void MCColors::DrawContentsLegacy(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite)
 {
 	uint2 xcells;
 	uint2 ycells;
@@ -284,6 +294,16 @@ void MCColors::draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_
 		else
 			drawborder(dc, rect, borderwidth);
 	}
+}
+
+void MCColors::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
+void MCColors::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
 }
 
 ///////////////////////////////////////////////////////////////////////////////

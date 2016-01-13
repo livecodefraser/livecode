@@ -68,6 +68,11 @@ public:
 	virtual bool settooltiptextcolor(MCContext *context);
 	virtual int32_t fetchtooltipstartingheight(void);
 
+    virtual bool candrawmenubackground();
+    virtual bool candrawmenubarbackground();
+    virtual bool candrawmenuheaderbackground();
+    virtual bool candrawmenuitembackground();
+    
 	virtual bool drawmenubackground(MCContext *context, const MCRectangle& dirty, const MCRectangle& rect, bool with_gutter);
 	virtual bool drawmenubarbackground(MCContext *context, const MCRectangle& dirty, const MCRectangle& rect, bool is_active);
 	virtual bool drawmenuheaderbackground(MCContext *context, const MCRectangle& dirty, MCButton *button);

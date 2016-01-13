@@ -1619,6 +1619,26 @@ bool MCNativeTheme::settooltiptextcolor(MCContext *p_context)
 	return true;
 }
 
+bool MCNativeTheme::candrawmenubackground()
+{
+    return getmenutheme() != NULL;
+}
+
+bool MCNativeTheme::candrawmenubarbackground()
+{
+    return getmenutheme() != NULL;
+}
+
+bool MCNativeTheme::candrawmenuheaderbackground()
+{
+    return getmenutheme() != NULL;
+}
+
+bool MCNativeTheme::candrawmenuitembackground()
+{
+    return getmenutheme() != NULL;
+}
+
 bool MCNativeTheme::drawmenubackground(MCDC *dc, const MCRectangle& dirty, const MCRectangle& rect, bool p_gutter)
 {
 	if (getmenutheme() == NULL)

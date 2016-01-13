@@ -137,11 +137,31 @@ MCControl *MCMagnify::clone(Boolean attach, Object_pos p, bool invisible)
 	return newmagnify;
 }
 
+void MCMagnify::DrawPrepare(MCDC *dc, MCRectangle &x_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
+void MCMagnify::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
 // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCMagnify::draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite)
+void MCMagnify::DrawContentsLegacy(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite)
 {
 	if (MCmagimage != NULL)
 		MCmagimage->magredrawrect(dc, dirty);
+}
+
+void MCMagnify::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
+void MCMagnify::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
 }
 
 IO_stat MCMagnify::load(IO_handle stream, uint32_t version)

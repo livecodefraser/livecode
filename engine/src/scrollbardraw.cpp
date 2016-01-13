@@ -39,12 +39,9 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 static MCWidgetScrollBarInfo themesbinfo;
 
 // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCScrollbar::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite)
+void MCScrollbar::DrawPrepare(MCDC *dc, MCRectangle& x_dirty, bool p_isolated, bool p_sprite)
 {
-	MCRectangle dirty;
-	dirty = p_dirty;
-
-	flags &= ~F_STYLE;
+    flags &= ~F_STYLE;
 	if (rect.width > rect.height)
 		flags |= F_HORIZONTAL;
 	else
@@ -66,10 +63,13 @@ void MCScrollbar::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bo
 		{
 			if (!dc -> begin_with_effects(m_bitmap_effects, rect))
 				return;
-			dirty = dc -> getclip();
+			x_dirty = dc -> getclip();
 		}
 	}
+}
 
+void MCScrollbar::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	MCWidgetInfo winfo;
 	winfo.type = (Widget_Type)getwidgetthemetype();
 	if (MCcurtheme && MCcurtheme->iswidgetsupported(winfo.type))
@@ -371,7 +371,20 @@ void MCScrollbar::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bo
 			}
 		}
 	}
+}
 
+void MCScrollbar::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
+void MCScrollbar::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
+void MCScrollbar::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (!p_isolated)
 	{
 		dc -> end();

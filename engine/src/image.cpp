@@ -1566,11 +1566,8 @@ void MCImage::unlockshape(MCObjectShape& p_shape)
 //  Redraw Management
 
 // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCImage::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite)
+void MCImage::DrawPrepare(MCDC *dc, MCRectangle& x_dirty, bool p_isolated, bool p_sprite)
 {
-	MCRectangle dirty;
-	dirty = p_dirty;
-
 	/* OVERHAUL - REVISIT - not sure setting F_OPAQUE has any effect here */
 	//if (maskimagealpha != NULL)
 	//	flags &= ~F_OPAQUE;
@@ -1600,16 +1597,24 @@ void MCImage::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p
 			{
 				if (!dc -> begin_with_effects(m_bitmap_effects, rect))
 					return;
-				dirty = dc -> getclip();
+				x_dirty = dc -> getclip();
 			}
 		}
 	}
+}
 
+void MCImage::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    
+}
+
+void MCImage::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	int2 xorigin;
 	int2 yorigin;
 
 	MCRectangle trect;
-	trect = MCU_intersect_rect(dirty, getrect());
+	trect = MCU_intersect_rect(p_dirty, getrect());
 	uint32_t t_pixwidth, t_pixheight;
 	getgeometry(t_pixwidth, t_pixheight);
 	if (state & CS_SIZE && state & CS_EDITED && (t_pixwidth != rect.width || t_pixheight != rect.height))
@@ -1620,7 +1625,10 @@ void MCImage::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p
 		yorigin = trect.y - rect.y;
 	}
 	drawme(dc, xorigin, yorigin, trect.width, trect.height, trect.x, trect.y, trect.width, trect.height);
+}
 
+void MCImage::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (getflag(F_SHOW_BORDER))
 	{
 		if (getflag(F_3D))
@@ -1631,8 +1639,12 @@ void MCImage::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p
 
 	if (getstate(CS_KFOCUSED))
 		drawfocus(dc, p_dirty);
+}
 
-	if (!p_isolated)
+void MCImage::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+	bool t_need_group = getflag(F_SHOW_BORDER) || getstate(CS_KFOCUSED) || getcompression() == F_PICT || m_bitmap_effects != NULL;
+    if (!p_isolated)
 	{
 		if (t_need_group)
 			dc -> end();

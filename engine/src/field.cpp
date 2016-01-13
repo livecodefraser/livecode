@@ -3105,12 +3105,9 @@ void MCField::unresolvechars(uint32_t p_part_id, findex_t& x_si, findex_t& x_ei)
 //  Redraw Management
 
 // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCField::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite)
+void MCField::DrawPrepare(MCDC *dc, MCRectangle& x_dirty, bool p_isolated, bool p_sprite)
 {
-	MCRectangle dirty;
-	dirty = p_dirty;
-
-	if (!p_isolated)
+    if (!p_isolated)
 	{
 		// MW-2011-09-06: [[ Redraw ]] If rendering as a sprite, don't change opacity or ink.
 		if (!p_sprite)
@@ -3126,7 +3123,7 @@ void MCField::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p
 		{
 			if (!dc -> begin_with_effects(m_bitmap_effects, MCU_reduce_rect(rect, -gettransient())))
 				return;
-			dirty = dc -> getclip();
+			x_dirty = dc -> getclip();
 		}
 	}
 
@@ -3152,11 +3149,14 @@ void MCField::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p
             m_recompute = false;
         }
     }
+}
 
+void MCField::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	MCRectangle frect = getfrect();
 	
 	dc->save();
-	dc->cliprect(dirty);
+	dc->cliprect(p_dirty);
 	
 	MCRectangle trect = frect;
 	if (flags & F_SHOW_BORDER && borderwidth)
@@ -3187,17 +3187,23 @@ void MCField::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p
 	}
 	
 	dc->restore();
+}
 
+void MCField::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	// MW-2009-06-14: If the field is opaque, then render the contents with that
 	//   marked.
 	bool t_was_opaque;
 	if (getflag(F_OPAQUE))
 		t_was_opaque = dc -> changeopaque(true);
-	drawrect(dc, dirty);
+	drawrect(dc, p_dirty);
 	if (getflag(F_OPAQUE))
 		dc -> changeopaque(t_was_opaque);
+}
 
-	frect = getfrect();
+void MCField::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+	MCRectangle frect = getfrect();
 	if (flags & F_SHADOW)
 	{
 		drawshadow(dc, rect, shadowoffset);
@@ -3207,7 +3213,10 @@ void MCField::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p
 	        && !(extraflags & EF_NO_FOCUS_BORDER) &&
 	        !(MCcurtheme && MCcurtheme->getthemeid() == LF_NATIVEGTK) )
 		drawfocus(dc, p_dirty);
+}
 
+void MCField::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (!p_isolated)
 	{
 		dc -> end();

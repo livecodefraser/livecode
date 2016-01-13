@@ -130,8 +130,15 @@ public:
 	virtual void undo(Ustruct *us);
 
 	// MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-	virtual void draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite) = 0;
+    void Draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite) = 0;
+    virtual void DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite) = 0;
+    virtual void DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite) = 0;
 
+    // Methods for preparing for and finishing bitmap effects drawing
+    virtual void DrawPrepare(MCDC* dc, MCRectangle& dirty, bool p_isolated, bool p_sprite) = 0;
+    virtual void DrawFinish(MCDC* dc, const MCRectangle& dirty, bool p_isolated, bool p_sprite) = 0;
+    
 	virtual IO_stat save(IO_handle stream, uint4 p_part, bool p_force_ext);
 	virtual Boolean kfocusset(MCControl *target);
 	virtual MCControl *clone(Boolean attach, Object_pos p, bool invisible);

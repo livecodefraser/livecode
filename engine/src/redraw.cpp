@@ -988,7 +988,7 @@ static bool testtilecache_sprite_renderer(void *p_context, MCContext *p_target, 
 	p_target -> setfunction(GXcopy);
 	p_target -> setopacity(255);
 
-	t_control -> draw(p_target, t_dirty_rect, false, true);
+	t_control -> Draw(p_target, t_dirty_rect, false, true);
 
 	return true;
 }

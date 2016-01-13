@@ -162,7 +162,11 @@ public:
 
 	virtual MCControl *clone(Boolean p_attach, Object_pos p_position, bool invisible);
 
-	virtual void draw(MCDC *p_dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawPrepare(MCDC *dc, MCRectangle &x_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
 	virtual Boolean maskrect(const MCRectangle& p_rect);
 	
     virtual bool getprop(MCExecContext& ctxt, uint32_t p_part_id, Properties p_which, MCNameRef p_index, Boolean p_effective, MCExecValue& r_value);

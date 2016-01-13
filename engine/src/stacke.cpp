@@ -304,7 +304,7 @@ void MCStack::effectrect(const MCRectangle& p_area, Boolean& r_abort)
 					{
 						MCContext *t_old_context = nil;
 						/* UNCHECKED */ t_old_context = new MCGraphicsContext(t_context);
-						curcard->draw(t_old_context, t_user_rect, false);
+						curcard->Draw(t_old_context, t_user_rect, false);
 						delete t_old_context;
 						
 						MCGContextSetFillRGBAColor(t_context, 1.0, 1.0, 1.0, 1.0);
@@ -336,7 +336,7 @@ void MCStack::effectrect(const MCRectangle& p_area, Boolean& r_abort)
 				{
 					MCContext *t_old_context = nil;
 					/* UNCHECKED */ t_old_context = new MCGraphicsContext(t_context);
-					curcard->draw(t_old_context, t_user_rect, false);
+					curcard->Draw(t_old_context, t_user_rect, false);
 					delete t_old_context;
 				}
 			}

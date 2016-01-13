@@ -3324,19 +3324,41 @@ void MCCard::drawselectionrect(MCContext *p_context)
 	p_context->setbackground(MCzerocolor);
 }
 
-void MCCard::draw(MCDC *dc, const MCRectangle& dirty, bool p_isolated)
+void MCCard::Draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated)
+{
+    // Attempt a themed background draw and, if that fails, use the legacy draw
+    bool t_themed_draw = false;         // Todo: check for loaded theme
+    if (t_themed_draw)
+        t_themed_draw = false;          // Todo: check that theme draws this control
+    if (!t_themed_draw)
+        DrawBackgroundLegacy(dc, p_dirty, p_isolated);
+    
+    // Draw the control contents. Because most of the content drawing functions
+    // will need quite a bit of work to update for theming, they are always
+    // "legacy" for the time being.
+    DrawContentsLegacy(dc, p_dirty, p_isolated);
+    
+    // Draw the foreground, depending on whether themed drawing is being used
+    if (t_themed_draw)
+        ;
+    else
+        DrawForegroundLegacy(dc, p_dirty, p_isolated);
+}
+
+void MCCard::DrawBackgroundLegacy(MCDC *dc, const MCRectangle& dirty, bool p_isolated)
 {
 	bool t_draw_cardborder;
 	t_draw_cardborder = true;
 
 	// MW-2011-09-23: If we are a menuwindow, then draw a themed menu background
 	//   otherwise fill a metal background, otherwise fill with background color.
-	if (MCcurtheme != nil && getstack() -> menuwindow &&
-		MCcurtheme -> drawmenubackground(dc, dirty, getrect(), true))
-		t_draw_cardborder = false;
-	else
+	if (MCcurtheme == nil || !getstack() -> menuwindow ||
+		!MCcurtheme -> drawmenubackground(dc, dirty, getrect(), true))
 		drawbackground(dc, dirty);
+}
 
+void MCCard::DrawContentsLegacy(MCDC *dc, const MCRectangle& dirty, bool p_isolated)
+{
 	if (objptrs != NULL)
 	{
 		MCObjptr *tptr = objptrs;
@@ -3350,8 +3372,11 @@ void MCCard::draw(MCDC *dc, const MCRectangle& dirty, bool p_isolated)
 
 	dc -> setopacity(255);
 	dc -> setfunction(GXcopy);
+}
 
-	if (t_draw_cardborder)
+void MCCard::DrawForegroundLegacy(MCDC *dc, const MCRectangle& dirty, bool p_isolated)
+{
+	if (MCcurtheme == nil || !getstack()->menuwindow || !MCcurtheme->candrawmenubackground())
 		drawcardborder(dc, dirty);
 	
 	if (getstate(CS_SIZE))

@@ -2999,12 +2999,9 @@ Boolean MCPlayer::isbuffering(void)
 //  Redraw Management
 
 // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCPlayer::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite)
+void MCPlayer::DrawPrepare(MCDC *dc, MCRectangle& x_dirty, bool p_isolated, bool p_sprite)
 {
-	MCRectangle dirty;
-	dirty = p_dirty;
-    
-	if (!p_isolated)
+    if (!p_isolated)
 	{
 		// MW-2011-09-06: [[ Redraw ]] If rendering as a sprite, don't change opacity or ink.
 		if (!p_sprite)
@@ -3020,13 +3017,19 @@ void MCPlayer::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
 		{
 			if (!dc -> begin_with_effects(m_bitmap_effects, rect))
 				return;
-			dirty = dc -> getclip();
+			x_dirty = dc -> getclip();
 		}
 	}
-    
+}
+
+void MCPlayer::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (MClook == LF_MOTIF && state & CS_KFOCUSED && !(extraflags & EF_NO_FOCUS_BORDER))
 		drawfocus(dc, p_dirty);
-    
+}
+
+void MCPlayer::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
     //if (!(state & CS_CLOSING))
 		//prepare(MCnullstring);
 	
@@ -3069,13 +3072,21 @@ void MCPlayer::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool 
     {
         drawcontroller(dc);
     }
-    
+}
+
+void MCPlayer::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (getflag(F_SHOW_BORDER))
+    {
 		if (getflag(F_3D))
 			draw3d(dc, rect, ETCH_SUNKEN, borderwidth);
 		else
-			drawborder(dc, rect, borderwidth);
-	
+            drawborder(dc, rect, borderwidth);
+    }
+}
+
+void MCPlayer::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (!p_isolated)
 	{
 		if (getstate(CS_SELECTED))

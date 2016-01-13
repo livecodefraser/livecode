@@ -318,9 +318,15 @@ public:
 	void allocicons();
 	void freeicons();
 	bool tabselectonmouseup();
-	// MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-	virtual void draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite);
-	void drawlabel(MCDC *dc, int2 sx, int sy, uint2 t, const MCRectangle &srect, MCStringRef p_label, uint2 fstyle, uindex_t p_mnemonic);
+	
+    // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
+    virtual void DrawPrepare(MCDC *dc, MCRectangle &x_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+    virtual void DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite);
+	
+    void drawlabel(MCDC *dc, int2 sx, int sy, uint2 t, const MCRectangle &srect, MCStringRef p_label, uint2 fstyle, uindex_t p_mnemonic);
 	void drawcheck(MCDC *dc, MCRectangle &srect, Boolean white);
 	void drawradio(MCDC *dc, MCRectangle &srect, Boolean white);
 	void drawoption(MCDC *dc, MCRectangle &srect, MCRectangle& r_content_rect);
@@ -492,6 +498,9 @@ private:
 	void switchunicode(bool p_to_unicode);
 	// MW-2012-02-16: [[ IntrinsicUnicode]] Attempt to change everything back to native if possible.
 	void trytochangetonative(void);
+    
+    // Calculates the rectangle for the button's shadow
+    MCRectangle GetShadowRect();
 
 	friend class ButtonMenuCallback;
     

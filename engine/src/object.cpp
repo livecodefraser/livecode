@@ -3072,7 +3072,7 @@ MCImageBitmap *MCObject::snapshot(const MCRectangle *p_clip, const MCPoint *p_si
 	}
 
 	if (t_type == CT_CARD)
-		((MCCard *)this) -> draw(t_context, r, true);
+		((MCCard *)this) -> Draw(t_context, r, true);
 	else
 	{
 		t_context -> setopacity(blendlevel * 255 / 100);
@@ -3088,7 +3088,7 @@ MCImageBitmap *MCObject::snapshot(const MCRectangle *p_clip, const MCPoint *p_si
 		if (t_effects != nil)
 			t_context -> begin_with_effects(t_effects, static_cast<MCControl *>(this) -> getrect());
 		// MW-2011-09-06: [[ Redraw ]] Render the control isolated, but not as a sprite.
-		((MCControl *)this) -> draw(t_context, r, true, false);
+		((MCControl *)this) -> Draw(t_context, r, true, false);
 		if (t_effects != nil)
 			t_context -> end();
 	}
@@ -4370,7 +4370,7 @@ static void compute_objectshape_mask(MCObject *p_object, const MCObjectShape& p_
 		p_object -> open();
 	
 	// Render the object into the context (isolated).
-	((MCControl *)p_object) -> draw(t_gfxcontext, t_rect, true, false);
+	((MCControl *)p_object) -> Draw(t_gfxcontext, t_rect, true, false);
 	
 	// Close the object if we opened it.
 	if (t_needs_open)

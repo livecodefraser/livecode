@@ -883,10 +883,33 @@ void MCControl::undo(Ustruct *us)
 	resizeparent();
 }
 
-// MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCControl::draw(MCDC *dc, const MCRectangle &dirty, bool p_isolated, bool p_sprite)
+void MCControl::Draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite)
 {
-	fprintf(stderr, "Control: ERROR tried to draw control id %d\n", obj_id);
+    // Prepare the control for drawing. This will set up any layers required for
+    // bitmap effects, etc. This might change the rect needing redrawn.
+    MCRectangle t_draw_rect = p_dirty;
+    DrawPrepare(dc, t_draw_rect, p_isolated, p_sprite);
+    
+    // Attempt a themed background draw and, if that fails, use the legacy draw
+    bool t_themed_draw = false;         // Todo: check for loaded theme
+    if (t_themed_draw)
+        t_themed_draw = false;          // Todo: check that theme draws this control
+    if (!t_themed_draw)
+        DrawBackgroundLegacy(dc, t_draw_rect, p_isolated, p_sprite);
+    
+    // Draw the control contents. Because most of the content drawing functions
+    // will need quite a bit of work to update for theming, they are always
+    // "legacy" for the time being.
+    DrawContentsLegacy(dc, t_draw_rect, p_isolated, p_sprite);
+    
+    // Draw the foreground, depending on whether themed drawing is being used
+    if (t_themed_draw)
+        ;
+    else
+        DrawForegroundLegacy(dc, t_draw_rect, p_isolated, p_sprite);
+    
+    // Drawing this control is complete
+    DrawFinish(dc, t_draw_rect, p_isolated, p_sprite);
 }
 
 IO_stat MCControl::save(IO_handle stream, uint4 p_part, bool p_force_ext)
@@ -1064,7 +1087,7 @@ void MCControl::redraw(MCDC *dc, const MCRectangle &dirty)
         
 		// MW-2011-09-06: [[ Redraw ] Make sure we draw the control normally (not
 		//   as a sprite).
-		draw(dc, trect, false, false);
+		Draw(dc, trect, false, false);
 		
 		dc->restore();
 	}

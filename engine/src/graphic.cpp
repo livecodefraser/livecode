@@ -2001,11 +2001,8 @@ void MCGraphic::drawlabel(MCDC *dc, int2 sx, int sy, uint2 twidth, const MCRecta
 }
 
 // MW-2011-09-06: [[ Redraw ]] Added 'sprite' option - if true, ink and opacity are not set.
-void MCGraphic::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool p_sprite)
+void MCGraphic::DrawPrepare(MCDC *dc, MCRectangle& x_dirty, bool p_isolated, bool p_sprite)
 {
-	MCRectangle dirty;
-	dirty = p_dirty;
-
 	dc -> setquality(getflag(F_G_ANTI_ALIASED) ? QUALITY_SMOOTH : QUALITY_DEFAULT);
 
 	if (!p_isolated)
@@ -2024,10 +2021,18 @@ void MCGraphic::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool
 		{
 			if (!dc -> begin_with_effects(m_bitmap_effects, rect))
 				return;
-			dirty = dc -> getclip();
+			x_dirty = dc -> getclip();
 		}
 	}
+}
 
+void MCGraphic::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
+    ;
+}
+
+void MCGraphic::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	MCRectangle trect = rect;
 	if (MClook == LF_MOTIF && state & CS_KFOCUSED
 	        && !(extraflags & EF_NO_FOCUS_BORDER))
@@ -2300,9 +2305,11 @@ void MCGraphic::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool
 		}
 	}
 	dc->setlineatts(0, LineSolid, CapButt, JoinBevel);
-
 	dc -> setquality(QUALITY_DEFAULT);
+}
 
+void MCGraphic::DrawForegroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (flags & F_SHOW_BORDER)
 	{
 		if (flags & F_3D)
@@ -2310,7 +2317,10 @@ void MCGraphic::draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated, bool
 		else
 			drawborder(dc, rect, borderwidth);
 	}
+}
 
+void MCGraphic::DrawFinish(MCDC *dc, const MCRectangle &p_dirty, bool p_isolated, bool p_sprite)
+{
 	if (!p_isolated)
 	{
 		dc -> end();
