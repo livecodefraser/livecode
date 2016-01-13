@@ -159,7 +159,7 @@ MCObject::MCObject()
     m_is_parent_script = false;
     
     // Objects inherit the theme by default
-    m_theme = kMCInterfaceThemeEmpty;
+    m_theme = NULL;
     m_theme_type = kMCPlatformControlTypeGeneric;
     
     // Attach ourselves to an object pool.
@@ -1419,17 +1419,15 @@ Boolean MCObject::getforecolor(uint2 p_di, Boolean rev, Boolean hilite,
                         // Use the themed colours and ignore inheritance. We do
                         // this so that controls always have the appropriate
                         // background colour (particularly fields).
-                        MCPlatformControlType t_control_type;
-                        MCPlatformControlPart t_control_part;
-                        MCPlatformControlState t_control_state;
                         MCPlatformThemeProperty t_theme_prop;
                         MCPlatformThemePropertyType t_theme_prop_type;
-                        if (o->getthemeselectorsforprop(P_BACK_COLOR, t_control_type, t_control_part, t_control_state, t_theme_prop, t_theme_prop_type))
+                        MCPlatformControlState t_extra_state;
+                        if (o->GetThemePropForProperty(P_BACK_COLOR, t_theme_prop, t_theme_prop_type, t_extra_state))
                         {
                             if (selected)
-                                t_control_state |= kMCPlatformControlStateSelected;
+                                t_extra_state |= kMCPlatformControlStateSelected;
                             
-                            if (MCPlatformGetControlThemePropColor(t_control_type, t_control_part, t_control_state, t_theme_prop, c))
+                            if (o->gettheme()->GetDefaultThemeColor(o, t_theme_prop, t_extra_state, c))
                                 return True;
                         }
                         
@@ -1446,11 +1444,9 @@ Boolean MCObject::getforecolor(uint2 p_di, Boolean rev, Boolean hilite,
 	}
 
     // Try to get the colour from the system theme rather than these hard-coded values
-    MCPlatformControlType t_control_type;
-    MCPlatformControlPart t_control_part;
-    MCPlatformControlState t_control_state;
     MCPlatformThemeProperty t_theme_prop;
     MCPlatformThemePropertyType t_theme_prop_type;
+    MCPlatformControlState t_extra_state = 0;
     Properties which;
     switch (p_di)
     {
@@ -1497,12 +1493,12 @@ Boolean MCObject::getforecolor(uint2 p_di, Boolean rev, Boolean hilite,
             break;
             
     }
-    if (o->getthemeselectorsforprop(which, t_control_type, t_control_part, t_control_state, t_theme_prop, t_theme_prop_type))
+    if (o->GetThemePropForProperty(which, t_theme_prop, t_theme_prop_type, t_extra_state))
     {
         if (selected)
-            t_control_state |= kMCPlatformControlStateSelected;
+            t_extra_state |= kMCPlatformControlStateSelected;
         
-        if (MCPlatformGetControlThemePropColor(t_control_type, t_control_part, t_control_state, t_theme_prop, c))
+        if (o->gettheme()->GetDefaultThemeColor(o, t_theme_prop, t_extra_state, c))
             return True;
     }
     
@@ -1961,7 +1957,7 @@ uint32_t MCObject::getfontattsnew(MCNameRef& fname, uint2 &size, uint2 &style)
 		}
 
         MCFontRef t_default_font;
-        MCPlatformGetControlThemePropFont(getcontroltype(), getcontrolsubpart(), getcontrolstate(), kMCPlatformThemePropertyTextFont, t_default_font);
+        gettheme()->GetDefaultThemeFont(this, kMCPlatformThemePropertyTextFont, t_default_font);
         
         MCFontStruct* t_font_struct;
         t_font_struct = MCFontGetFontStruct(t_default_font);
@@ -4768,7 +4764,7 @@ bool MCObject::mapfont(bool recursive)
     else
     {
         // No font style was found. Use the themed font
-        MCPlatformGetControlThemePropFont(getcontroltype(), getcontrolsubpart(), getcontrolstate(), kMCPlatformThemePropertyTextFont, m_font);
+        gettheme()->GetDefaultThemeFont(this, kMCPlatformThemePropertyTextFont, m_font);
     }
 	
 	// MW-2012-03-02: [[ Bug 10044 ]] If we had to temporarily map the parent's font
@@ -5007,8 +5003,8 @@ bool MCObject::needtosavefontflags(void) const
 bool MCObject::inheritfont() const
 {
     return !hasfontattrs()
-        && (gettheme() == kMCInterfaceThemeLegacy)  /* Fonts depend on control type in non-legacy themes */
-        && (m_theme == kMCInterfaceThemeEmpty)      /* Can only inherit if theme is inherited too */
+        && (gettheme()->IsLegacyTheme())  /* Fonts depend on control type in non-legacy themes */
+        && (m_theme == NULL)              /* Can only inherit if theme is inherited too */
         /*&& (m_theme_type == kMCPlatformControlTypeGeneric)*/;
 }
 

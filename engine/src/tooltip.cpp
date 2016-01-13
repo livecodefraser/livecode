@@ -157,7 +157,7 @@ void MCTooltip::opentip()
     
     // Get the colour for the tooltip background
     MCColor t_bg_color;
-    if (MCPlatformGetControlThemePropColor(getcontroltype(), getcontrolsubpart(), getcontrolstate(), kMCPlatformThemePropertyBackgroundColor, t_bg_color))
+    if (gettheme()->GetDefaultThemeColor(this, kMCPlatformThemePropertyBackgroundColor, t_bg_color))
     {
         MCExecContext ctxt(this, nil, nil);
         SetBackPixel(ctxt, &t_bg_color.pixel);
@@ -166,7 +166,7 @@ void MCTooltip::opentip()
         setsprop(P_BACK_COLOR, MCttbgcolor);
 
     // Get the font for the tooltip
-    if (!MCPlatformGetControlThemePropFont(getcontroltype(), getcontrolsubpart(), getcontrolstate(), kMCPlatformThemePropertyTextFont, m_font))
+    if (gettheme()->GetDefaultThemeFont(this, kMCPlatformThemePropertyTextFont, m_font))
     {
         // MW-2012-02-17: [[ LogFonts ]] Convert the tooltip font string to
         //   a name and create the font.

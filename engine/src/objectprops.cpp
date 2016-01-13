@@ -2676,25 +2676,15 @@ MCPlatformControlState MCObject::getcontrolstate()
     if (getstack() && getstack()->getcurcard() == getcard() && getstack()->state & CS_KFOCUSED)
         t_state |= kMCPlatformControlStateWindowActive;
     
-    // Remain in backwards-compatible mode if requested
-    intenum_t t_theme = gettheme();
-    if (t_theme == kMCInterfaceThemeLegacy)
-        t_state |= kMCPlatformControlStateCompatibility;
-    
     return MCPlatformControlState(t_state);
 }
 
-bool MCObject::getthemeselectorsforprop(Properties which, MCPlatformControlType& r_type, MCPlatformControlPart& r_part, MCPlatformControlState& r_state, MCPlatformThemeProperty& r_prop, MCPlatformThemePropertyType& r_proptype)
+bool MCObject::GetThemePropForProperty(Properties which, MCPlatformThemeProperty& r_prop, MCPlatformThemePropertyType& r_proptype, MCPlatformControlState& r_extra_state)
 {
     // Get the theming selectors for this object
-    MCPlatformControlType t_type;
-    MCPlatformControlPart t_part;
-    MCPlatformControlState t_state;
     MCPlatformThemeProperty t_prop;
     MCPlatformThemePropertyType t_proptype;
-    t_type = getcontroltype();
-    t_part = getcontrolsubpart();
-    t_state = getcontrolstate();
+    MCPlatformControlState t_state = 0;
     
     // Transform the LiveCode property into the corresponding theme property
     switch (which)
@@ -2761,22 +2751,20 @@ bool MCObject::getthemeselectorsforprop(Properties which, MCPlatformControlType&
             return false;
     }
     
-    r_type = t_type;
-    r_part = t_part;
-    r_state = t_state;
     r_prop = t_prop;
     r_proptype = t_proptype;
+    r_extra_state = t_state;
     return true;
 }
 
-MCInterfaceTheme MCObject::gettheme() const
+MCControlTheme* MCObject::gettheme() const
 {
-    if (m_theme != kMCInterfaceThemeEmpty)
+    if (m_theme != NULL)
         return m_theme;
     else if (parent != nil)
         return parent->gettheme();
     else
-        return kMCInterfaceThemeNative;
+        return MCControlThemeLegacyNative::GetInstance();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

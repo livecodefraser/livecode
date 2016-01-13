@@ -26,6 +26,7 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 #include "objdefs.h"
 #include "parsedef.h"
 #include "platform.h"
+#include "theme.h"
 
 enum {
     MAC_SHADOW,
@@ -285,7 +286,7 @@ protected:
     bool m_is_parent_script : 1;
     
     // Whether to use legacy theming (or native-like theming)
-    MCInterfaceTheme m_theme;
+    MCControlTheme* m_theme;
     
     // Override the type of the control for theming purposes
     MCPlatformControlType m_theme_type;
@@ -1204,6 +1205,11 @@ public:
     // Object pool instance variable manipulation
     MCDeletedObjectPool *getdeletedobjectpool(void) const { return m_pool; }
     void setdeletedobjectpool(MCDeletedObjectPool *pool) { m_pool = pool; }
+    
+    virtual MCPlatformControlType getcontroltype();
+    virtual MCPlatformControlPart getcontrolsubpart();
+    virtual MCPlatformControlState getcontrolstate();
+    bool GetThemePropForProperty(Properties, MCPlatformThemeProperty&, MCPlatformThemePropertyType&, MCPlatformControlState&);
 
 protected:
 	IO_stat defaultextendedsave(MCObjectOutputStream& p_stream, uint4 p_part);
@@ -1231,14 +1237,8 @@ protected:
     // MW-2014-09-30: [[ ScriptStack ]] Used by MCStack::setasscriptonly.
     Exec_stat setscriptprop(MCExecPoint& ep);
 #endif
-
-    // FG-2014-11-11: [[ Better theming ]] Fetch the control type/state for theming purposes
-    virtual MCPlatformControlType getcontroltype();
-    virtual MCPlatformControlPart getcontrolsubpart();
-    virtual MCPlatformControlState getcontrolstate();
-    bool getthemeselectorsforprop(Properties, MCPlatformControlType&, MCPlatformControlPart&, MCPlatformControlState&, MCPlatformThemeProperty&, MCPlatformThemePropertyType&);
     
-    MCInterfaceTheme gettheme() const;
+    MCControlTheme* gettheme() const;
     
 private:
 #ifdef OLD_EXEC

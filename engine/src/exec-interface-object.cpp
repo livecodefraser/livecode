@@ -2107,15 +2107,13 @@ bool MCObject::GetColor(MCExecContext& ctxt, Properties which, bool effective, M
         if (!t_found && !recursive)
         {
             // Look up the colour using the theming API
-            MCPlatformControlType t_control_type;
-            MCPlatformControlPart t_control_part;
-            MCPlatformControlState t_control_state;
             MCPlatformThemeProperty t_control_prop;
             MCPlatformThemePropertyType t_control_prop_type;
-            if (getthemeselectorsforprop(which, t_control_type, t_control_part, t_control_state, t_control_prop, t_control_prop_type))
+            MCPlatformControlState t_state;
+            if (GetThemePropForProperty(which, t_control_prop, t_control_prop_type, t_state))
             {
                 MCColor t_color;
-                if (MCPlatformGetControlThemePropColor(t_control_type, t_control_part, t_control_state, t_control_prop, t_color))
+                if (gettheme()->GetDefaultThemeColor(this, t_control_prop, t_state, t_color))
                 {
                     t_found = true;
                     MCscreen->alloccolor(t_color);
@@ -4350,12 +4348,36 @@ void MCObject::GetCardNames(MCExecContext& ctxt, MCCard *p_cards, bool p_all, ui
 
 void MCObject::GetTheme(MCExecContext& ctxt, intenum_t& r_theme)
 {
-    r_theme = m_theme;
+    if (m_theme == NULL)
+        r_theme = kMCInterfaceThemeEmpty;
+    else if (m_theme->IsLegacyNativeTheme())
+        r_theme = kMCInterfaceThemeNative;
+    else if (m_theme->IsLegacyTheme())
+        r_theme = kMCInterfaceThemeLegacy;
+    else
+        r_theme = kMCInterfaceThemeEmpty;
 }
 
 void MCObject::SetTheme(MCExecContext& ctxt, intenum_t p_theme)
 {
-    m_theme = MCInterfaceTheme(p_theme);
+    switch (p_theme)
+    {
+        case kMCInterfaceThemeEmpty:
+            m_theme = NULL;
+            break;
+            
+        case kMCInterfaceThemeNative:
+            m_theme = MCControlThemeLegacyNative::GetInstance();
+            break;
+            
+        case kMCInterfaceThemeLegacy:
+            m_theme = MCControlThemeLegacy::GetInstance();
+            break;
+            
+        default:
+            ctxt.Throw();
+            break;
+    }
     
     // Changing the theme probably changed the font
     if (recomputefonts(parent ? parent->m_font : nil, true))
@@ -4366,7 +4388,12 @@ void MCObject::SetTheme(MCExecContext& ctxt, intenum_t p_theme)
 
 void MCObject::GetEffectiveTheme(MCExecContext& ctxt, intenum_t& r_theme)
 {
-    r_theme = gettheme();
+    if (m_theme != NULL)
+        GetTheme(ctxt, r_theme);
+    else if (parent != nil)
+        parent->GetTheme(ctxt, r_theme);
+    else
+        r_theme = kMCInterfaceThemeNative;
 }
 
 void MCObject::GetThemeControlType(MCExecContext& ctxt, intenum_t& r_theme)

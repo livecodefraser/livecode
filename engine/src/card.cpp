@@ -3326,23 +3326,16 @@ void MCCard::drawselectionrect(MCContext *p_context)
 
 void MCCard::Draw(MCDC *dc, const MCRectangle& p_dirty, bool p_isolated)
 {
-    // Attempt a themed background draw and, if that fails, use the legacy draw
-    bool t_themed_draw = false;         // Todo: check for loaded theme
-    if (t_themed_draw)
-        t_themed_draw = false;          // Todo: check that theme draws this control
-    if (!t_themed_draw)
-        DrawBackgroundLegacy(dc, p_dirty, p_isolated);
+    // Use the theme to draw the card background
+    gettheme()->DrawBackground(dc, this, p_dirty, p_isolated, false);
     
     // Draw the control contents. Because most of the content drawing functions
     // will need quite a bit of work to update for theming, they are always
     // "legacy" for the time being.
     DrawContentsLegacy(dc, p_dirty, p_isolated);
     
-    // Draw the foreground, depending on whether themed drawing is being used
-    if (t_themed_draw)
-        ;
-    else
-        DrawForegroundLegacy(dc, p_dirty, p_isolated);
+    // Use the theme to draw the card foreground
+    gettheme()->DrawForeground(dc, this, p_dirty, p_isolated, false);
 }
 
 void MCCard::DrawBackgroundLegacy(MCDC *dc, const MCRectangle& dirty, bool p_isolated)
