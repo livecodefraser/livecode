@@ -50,6 +50,8 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 #include "objectpropsets.h"
 #include "font.h"
 
+#include "themes/flat/theme-flat.h"
+
 #include "exec-interface.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1206,6 +1208,7 @@ MCExecEnumTypeElementInfo _kMCInterfaceThemeElementInfo[] =
     { "", kMCInterfaceThemeEmpty, false },
     { "native", kMCInterfaceThemeNative, false },
     { "legacy", kMCInterfaceThemeLegacy, false },
+    { "flat", kMCInterfaceThemeFlat, false },
 };
 
 MCExecEnumTypeInfo _kMCInterfaceThemeTypeInfo =
@@ -4354,6 +4357,8 @@ void MCObject::GetTheme(MCExecContext& ctxt, intenum_t& r_theme)
         r_theme = kMCInterfaceThemeNative;
     else if (m_theme->IsLegacyTheme())
         r_theme = kMCInterfaceThemeLegacy;
+    else if (m_theme == MCThemeGetFlat())
+        r_theme = kMCInterfaceThemeFlat;
     else
         r_theme = kMCInterfaceThemeEmpty;
 }
@@ -4372,6 +4377,10 @@ void MCObject::SetTheme(MCExecContext& ctxt, intenum_t p_theme)
             
         case kMCInterfaceThemeLegacy:
             m_theme = MCControlThemeLegacy::GetInstance();
+            break;
+            
+        case kMCInterfaceThemeFlat:
+            m_theme = MCThemeGetFlat();
             break;
             
         default:

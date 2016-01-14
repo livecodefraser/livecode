@@ -1245,6 +1245,7 @@ enum MCPlatformThemeProperty
     kMCPlatformThemePropertyTextFont,               // [Font]       Font for text drawing
     kMCPlatformThemePropertyTextColor,              // [Color]      Text color
     kMCPlatformThemePropertyTextSize,               // [Integer]    Text point size
+    kMCPlatformThemePropertyForegroundColor,        // [Color]      Foreground color
     kMCPlatformThemePropertyBackgroundColor,        // [Color]      Background color
     kMCPlatformThemePropertyAlpha,                  // [Integer]    Whole-control transparency
     kMCPlatformThemePropertyShadowColor,            // [Color]      Color for control shadow

@@ -1,0 +1,244 @@
+/*
+Copyright (C) 2016 LiveCode Ltd.
+
+This file is part of LiveCode.
+
+LiveCode is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License v3 as published by the Free
+Software Foundation.
+
+LiveCode is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with LiveCode.  If not see <http://www.gnu.org/licenses/>.
+*/
+
+module com.livecode.themes.flat
+
+metadata version is "0.1.0"
+metadata author is "LiveCode"
+metadata title is "Flat Theme"
+
+use com.livecode.canvas
+
+private handler inflateRect(in pRect as Rectangle, in pBy as Number) returns Rectangle
+    return rectangle [the x of pRect - pBy, \
+        the y of pRect - pBy, \
+        the x of pRect + the width of pRect + 2*pBy, \
+        the y of pRect + the height of pRect + 2*pBy]
+end handler
+
+private handler lightenColor(in pColor as Color) returns Color
+    if (the red of pColor + the green of pColor + the blue of pColor) > 1.5 then
+        return color [the red of pColor * 0.9, the green of pColor * 0.9, the blue of pColor * 0.9, the alpha of pColor]
+    else
+        return color [the red of pColor * 0.9 + 0.2, the green of pColor * 0.9 + 0.2, the blue of pColor * 0.9 + 0.2, the alpha of pColor]
+    end if
+end handler
+
+private handler buttonColor(in pProps as Array) returns Color
+    if "opaque" is not among the keys of pProps then
+        return color [0, 0, 0, 0]
+    end if
+
+    variable tColor as Color
+    if "3d" is in the keys of pProps then
+        put pProps["hilightColor"] into tColor
+    else
+        put pProps["backgroundColor"] into tColor
+    end if
+
+    if "pressed" is in pProps["state"] then
+        return lightenColor(tColor)
+    else
+        return tColor
+    end if
+end handler
+
+private handler drawShadowForRoundRect(in pRect as Rectangle, in pRadius as Number, in pHeavy as Boolean)
+    // Save the canvas state as we will be transforming it
+    save state of this canvas
+
+    // Draw the main shadow rect
+    set the paint of this canvas to solid paint with color [0, 0, 0, 0.05]
+    fill rounded rectangle path of inflateRect(pRect, 1) with radius (pRadius+1) on this canvas
+    fill rounded rectangle path of inflateRect(pRect, 2) with radius (pRadius+2) on this canvas
+
+    // Draw the deeper shadow at the left and right edges
+    translate this canvas by [1, 0]
+    fill rounded rectangle path of inflateRect(pRect, 1) with radius (pRadius+1) on this canvas
+
+    // Draw the deepest shadow at the bottom edge
+    if pHeavy then
+        translate this canvas by [3, 3]
+        fill rounded rectangle path of pRect with radius (pRadius+3) on this canvas
+    end if
+
+    // Restore the canvas state
+    restore state of this canvas
+end handler
+
+private handler drawPushButtonBackground(in pProps as Array, in pRect as Rectangle) returns Boolean
+    // Draw the shadow
+    if "3d" is among the keys of pProps then
+        drawShadowForRoundRect(pRect, 4, true)
+    end if
+
+    // Draw the button background
+    set the paint of this canvas to solid paint with buttonColor(pProps)
+    fill rounded rectangle path of pRect with radius 4 on this canvas
+
+    return true
+end handler
+
+private handler drawActionButtonBackground(in pProps as Array, in pRect as Rectangle) returns Boolean
+    // Use the shorter of the axes for the radius of the button
+    variable tRadius as Number
+    if the height of pRect > the width of pRect then
+        put (the width of pRect)/2 into tRadius
+    else
+        put (the height of pRect)/2 into tRadius
+    end if
+
+    // Centre of the circle
+    variable tCentre as List
+    put [the x of pRect + (the width of pRect)/2, the y of pRect + (the height of pRect)/2] into tCentre
+
+    // Draw the shadow
+    save state of this canvas
+    set the paint of this canvas to solid paint with color [0, 0, 0, 0.05]
+    fill circle path centered at point tCentre with radius (tRadius+1) on this canvas
+    translate this canvas by [0, 2]
+    fill circle path centered at point tCentre with radius (tRadius+2) on this canvas
+    translate this canvas by [0, 2]
+    fill circle path centered at point tCentre with radius (tRadius+3) on this canvas
+    restore state of this canvas
+
+    // Draw the button background
+    set the paint of this canvas to solid paint with buttonColor(pProps)
+    fill circle path centered at point tCentre with radius tRadius on this canvas
+
+    return true
+end handler
+
+private handler drawButtonBackground(in pProps as Array, in pRect as Rectangle) returns Boolean
+    if pProps["buttonType"] is "pushbutton" then
+        return drawPushButtonBackground(pProps, pRect)
+    else if pProps["buttonType"] is "checkbox" then
+
+    else if pProps["buttonType"] is "radiobutton" then
+
+    else if pProps["buttonType"] is "menu" then
+
+    else if pProps["buttonType"] is "oval" then
+        return drawActionButtonBackground(pProps, pRect)
+    end if
+    return false
+end handler
+
+private handler drawFieldBackground(in pProps as Array, in pRect as Rectangle) returns Boolean
+    // Draw a shadow for 3D fields else draw nothing
+    if "3d" is among the keys of pProps then
+        drawShadowForRoundRect(pRect, 2, false)
+    end if
+    return true
+end handler
+
+private handler drawFieldForeground(in pProps as Array, in pRect as Rectangle) returns Boolean
+    // Draw a single underline for the field for non-3D fields
+    if "3d" is among the keys of pProps then
+        return true
+    end if
+    variable tLineRect as Rectangle
+    set the paint of this canvas to solid paint with color [0.13, 0.59, 0.95]
+
+    put rectangle [the x of pRect, \
+        the y of pRect + the height of pRect, \
+        the x of pRect + the width of pRect, \
+        the y of pRect + the height of pRect + 3] into tLineRect
+    fill rectangle path of tLineRect on this canvas
+
+    return true
+end handler
+
+
+public handler themeDrawBackground(in pProps as Array, in pDirty as Rectangle) returns Boolean
+    variable tControlRect as Rectangle
+    put pProps["rect"] into tControlRect
+
+    if pProps["baseType"] is "button" then
+        return drawButtonBackground(pProps, tControlRect)
+    else if pProps["baseType"] is "field" then
+        return drawFieldBackground(pProps, tControlRect)
+    end if
+
+    // Not handled
+    return false
+end handler
+
+
+public handler themeDrawForeground(in pProps as Array, in pDirty as Rectangle) returns Boolean
+    variable tControlRect as Rectangle
+    put pProps["rect"] into tControlRect
+
+    if pProps["baseType"] is "field" then
+        return drawFieldForeground(pProps, tControlRect)
+    end if
+
+    // Not handled
+    return false
+end handler
+
+public handler defaultAccentColor() returns Color
+    return color [0.13, 0.59, 0.95]
+end handler
+
+public handler defaultBackColor() returns Color
+    return color [1, 1, 1]
+end handler
+
+public handler defaultTextColor() returns Color
+    return color [0, 0, 0]
+end handler
+
+public handler themeGetDefaultProperty(in pProps as Array, in pWhich as String) returns optional any
+    if pWhich is "textFont" then
+        if pProps["baseType"] is "field" then
+            return font "Arial" at size 13
+        end if
+        return font "Arial" at size 16
+    end if
+    if pWhich is "textColor" or pWhich is "foregroundColor" then
+        if pProps["baseType"] is "button" then
+            variable tColor as Color
+            if "3d" is among the keys of pProps then
+                put defaultBackColor() into tColor
+            else
+                put defaultAccentColor() into tColor
+            end if
+            if "selected" is in pProps["state"] then
+                put lightenColor(tColor) into tColor
+            end if
+            return tColor
+        else
+            return defaultTextColor()
+        end if
+    end if
+    if pWhich is "backgroundColor" then
+        if "selected" is in pProps["state"] then
+            // Highlight colour
+            return defaultAccentColor()
+        else
+            return defaultBackColor()
+        end if
+    end if
+
+    // Unknown property - return an empty value to indicate failure
+    return nothing
+end handler
+
+
+end module

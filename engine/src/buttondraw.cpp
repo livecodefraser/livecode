@@ -67,6 +67,10 @@ void MCButton::DrawPrepare(MCDC *dc, MCRectangle& x_dirty, bool p_isolated, bool
 			x_dirty = dc -> getclip();
 		}
 	}
+    
+    // Set a foreground colour on the DC as, if we skip legacy drawing, it won't
+    // get set otherwise and we could pick up any old colour.
+    setforeground(dc, DI_PSEUDO_BUTTON_TEXT, false);
 }
 
 MCRectangle MCButton::GetShadowRect()
@@ -371,7 +375,7 @@ void MCButton::DrawBackgroundLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p
 				(MClook != LF_MOTIF && style == F_MENU && flags & F_OPAQUE && state & CS_ARMED && !(flags & F_SHOW_BORDER)))
 				setforeground(dc, DI_PSEUDO_BUTTON_TEXT_SEL, False, True);
 			else
-				setforeground(dc, DI_FORE, (state & CS_HILITED && flags & F_HILITE_FILL
+				setforeground(dc, DI_PSEUDO_BUTTON_TEXT, (state & CS_HILITED && flags & F_HILITE_FILL
 				                            || state & CS_ARMED && flags & F_ARM_FILL) && flags & F_OPAQUE && ((MClook != LF_WIN95 && !MCaqua)
 				                            || style != F_STANDARD), False);
         }
@@ -420,7 +424,6 @@ void MCButton::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_i
         {
             t_themed_menu = true;
             //dc -> setforeground(getflag(F_DISABLED) ? dc -> getgray() : dc -> getblack());
-            setforeground(dc, DI_PSEUDO_BUTTON_TEXT, False);
         }
         else if (menucontrol != MENUCONTROL_NONE && MCcurtheme != NULL &&
                  MCcurtheme -> candrawmenuitembackground())
@@ -428,9 +431,7 @@ void MCButton::DrawContentsLegacy(MCDC *dc, const MCRectangle &p_dirty, bool p_i
             t_themed_menu = true;
             indicator = False;
             //dc -> setforeground(getflag(F_DISABLED) ? dc -> getgray() : dc -> getblack());
-            setforeground(dc, DI_PSEUDO_BUTTON_TEXT, False);
         }
-        
         
         // SN-2014-08-12: [[ Bug 13155 ]] Don't try to draw the icons if the button has not got any
         // SN-2014-12-17: [[ Bug 14249 ]] Do not try to draw the curicon if there is no current
@@ -1681,9 +1682,9 @@ void MCButton::drawtabs(MCDC *dc, MCRectangle &srect)
 		}
 		else
 			if (reversetext)
-				setforeground(dc, DI_BACK, False, True);
+				setforeground(dc, DI_PSEUDO_BUTTON_TEXT_SEL, False, True);
 			else
-				setforeground(dc, DI_FORE, False);
+				setforeground(dc, DI_PSEUDO_BUTTON_TEXT, False);
         // AL-2014-09-24: [[ Bug 13528 ]] Don't draw character indicating button is disabled
         dc -> drawtext_substring(textx, cury + yoffset, t_tab, t_range, m_font, false, kMCDrawTextNoBreak);
 		if ((disabled || flags & F_DISABLED) && MClook == LF_MOTIF)

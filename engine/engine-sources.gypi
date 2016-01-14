@@ -26,6 +26,7 @@
 			'src/resolution.h',
 			'src/textlayout.h',
 			'src/theme.h',
+			'src/theme-lcb.h',
 			'src/tilecache.h',
 			'src/bitmapeffect.cpp',
 			'src/bitmapeffectblur.cpp',
@@ -587,6 +588,10 @@
 			# Native layers
 			'src/native-layer.h',
 			'src/native-layer.cpp',
+
+			# Built-in themes
+			'src/themes/flat/theme-flat.h',
+			'src/themes/flat/theme-flat.cpp',
 		],
 		
 		# Sources that are only for desktop mode
@@ -966,6 +971,7 @@
 		'engine_other_lcb_files':
 		[
 			'src/browser.lcb',
+			'src/themes/flat/theme-flat.lcb',
 		],
 
 		# Engine cpptest source files

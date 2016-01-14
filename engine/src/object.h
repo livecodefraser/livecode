@@ -110,7 +110,8 @@ enum MCInterfaceTheme
 {
     kMCInterfaceThemeEmpty = 0,
     kMCInterfaceThemeNative = 1,
-    kMCInterfaceThemeLegacy = 2
+    kMCInterfaceThemeLegacy = 2,
+    kMCInterfaceThemeFlat = 3,
 };
 
 struct MCObjectShape

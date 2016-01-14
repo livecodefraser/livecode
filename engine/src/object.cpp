@@ -1465,9 +1465,12 @@ Boolean MCObject::getforecolor(uint2 p_di, Boolean rev, Boolean hilite,
             /* FALLTHROUGH */
             
         case DI_FORE:
+            which = P_FORE_COLOR;
+            break;
+            
         case DI_PSEUDO_TEXT_COLOR:
         case DI_PSEUDO_BUTTON_TEXT:
-            which = P_FORE_COLOR;
+            which = P_TEXT_COLOR;
             break;
             
         case DI_BACK:
@@ -1957,7 +1960,10 @@ uint32_t MCObject::getfontattsnew(MCNameRef& fname, uint2 &size, uint2 &style)
 		}
 
         MCFontRef t_default_font;
-        gettheme()->GetDefaultThemeFont(this, kMCPlatformThemePropertyTextFont, t_default_font);
+        if (!gettheme()->GetDefaultThemeFont(this, kMCPlatformThemePropertyTextFont, t_default_font))
+        {
+            MCFontCreate(MCNAME(DEFAULT_TEXT_FONT), 0, DEFAULT_TEXT_SIZE, t_default_font);
+        }
         
         MCFontStruct* t_font_struct;
         t_font_struct = MCFontGetFontStruct(t_default_font);

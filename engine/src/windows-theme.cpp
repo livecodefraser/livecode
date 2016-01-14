@@ -119,6 +119,7 @@ bool MCPlatformGetControlThemePropColor(MCPlatformControlType p_type, MCPlatform
     switch (p_prop)
     {
         case kMCPlatformThemePropertyTextColor:
+        case kMCPlatformThemePropertyForegroundColor:
         {
             t_found = true;
             if (p_state & kMCPlatformControlStateDisabled)

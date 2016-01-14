@@ -2694,7 +2694,7 @@ bool MCObject::GetThemePropForProperty(Properties which, MCPlatformThemeProperty
         case P_FORE_PIXEL:
         case P_FORE_COLOR:
             t_proptype = kMCPlatformThemePropertyTypeColor;
-            t_prop = kMCPlatformThemePropertyTextColor;
+            t_prop = kMCPlatformThemePropertyForegroundColor;
             break;
             
         case P_BACK_PIXEL:
@@ -2736,6 +2736,11 @@ bool MCObject::GetThemePropForProperty(Properties which, MCPlatformThemeProperty
         case P_BOTTOM_COLOR:
             t_proptype = kMCPlatformThemePropertyTypeColor;
             t_prop = kMCPlatformThemePropertyBottomEdgeColor;
+            break;
+            
+        case P_TEXT_COLOR:
+            t_proptype = kMCPlatformThemePropertyTypeColor;
+            t_prop = kMCPlatformThemePropertyTextColor;
             break;
             
         case P_TEXT_FONT:

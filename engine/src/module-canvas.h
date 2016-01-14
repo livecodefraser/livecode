@@ -510,6 +510,8 @@ extern "C" MC_DLLEXPORT void MCCanvasFontMeasureTextImageBoundsOnCanvas(MCString
 
 // Canvas
 
+extern "C" MC_DLLEXPORT void MCCanvasThisCanvas(MCCanvasRef& r_canvas);
+
 extern "C" MC_DLLEXPORT void MCCanvasAlignmentEvaluate(integer_t p_h_align, integer_t p_v_align, integer_t &r_align);
 
 // Properties
