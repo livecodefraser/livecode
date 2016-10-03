@@ -487,7 +487,6 @@ static bool MCDeployToLinuxReadHeader(MCDeployFileRef p_file, bool p_is_android,
 	else
 	{
 		if (r_header . e_type != ET_DYN ||
-			r_header . e_machine != EM_ARM ||
 			r_header . e_version != EV_CURRENT)
 			return MCDeployThrow(kMCDeployErrorLinuxBadImage);
 	}
