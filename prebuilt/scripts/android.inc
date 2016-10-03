@@ -33,7 +33,7 @@ fi
 # Android architectures
 # All Android variants are buildable but not all are used 
 if [ -z "${CUSTOM_ARCH}" ] ; then
-	export ARCHS="armv6 armv7a arm64_v8a mipsel mips64el x86 x86_64"
+	export ARCHS="armv6 armv7a arm64-v8a mipsel mips64el x86 x86_64"
 else
 	export ARCHS="${CUSTOM_ARCH}"
 fi
