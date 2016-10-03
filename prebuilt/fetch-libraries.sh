@@ -2,7 +2,7 @@
 
 # Libraries to fetch
 PLATFORMS=( mac linux win32 android ios emscripten )
-ARCHS_android=( armv7a )
+ARCHS_android=( armv7a arm64-v8a x86 x86_64 )
 ARCHS_mac=( Universal )
 ARCHS_ios=( Universal )
 ARCHS_win32=( i386 )
