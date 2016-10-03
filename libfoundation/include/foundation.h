@@ -321,6 +321,12 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 #define __ARM__
 #define __LP32__ 1
 #define __SMALL__
+#elif defined(__aarch64__)
+#define __64_BIT__ 1
+#define __LITTLE_ENDIAN__ 1
+#define __ARM64__
+#define __LP64__ 1
+#define __MEDIUM__ 1
 #endif
 
 // Native char set
@@ -426,10 +432,18 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 #include <stddef.h>
 #include <limits.h>
 
-#define UINT8_MIN (0U)
-#define UINT16_MIN (0U)
-#define UINT32_MIN (0U)
-#define UINT64_MIN (0ULL)
+#ifndef UINT8_MIN
+#   define UINT8_MIN (0U)
+#endif
+#ifndef UINT16_MIN
+#   define UINT16_MIN (0U)
+#endif
+#ifndef UINT32_MIN
+#   define UINT32_MIN (0U)
+#endif
+#ifndef UINT64_MIN
+#   define UINT64_MIN (0ULL)
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //
