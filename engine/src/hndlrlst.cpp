@@ -79,7 +79,8 @@ void MCHandlerArray::append(MCHandler *p_handler)
 
 void MCHandlerArray::sort(void)
 {
-	qsort(m_handlers, m_count, sizeof(MCHandler *), compare_handler);
+	if (m_count > 0)
+		qsort(m_handlers, m_count, sizeof(MCHandler *), compare_handler);
 }
 
 MCHandler *MCHandlerArray::find(MCNameRef p_name)
