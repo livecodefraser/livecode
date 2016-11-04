@@ -151,6 +151,46 @@
 			],
 		},
 		
+		'UBSan':
+		{
+			'cflags':
+			[
+				'-O3',
+				'-g3',
+			],
+			
+			'defines':
+			[
+				'_RELEASE',
+				'NDEBUG',
+			],
+			
+			'ldflags':
+			[
+				'-fsanitize=undefined',
+			],
+			
+			# Re-enable RTTI for better coverage
+			'cflags_cc!':
+			[
+				'-fno-rtti',
+			],
+			
+			'target_conditions':
+			[
+				[
+					'silence_warnings == 0',
+					{
+						'cflags':
+						[
+							'-fsanitize=undefined',
+							'-fno-sanitize=function',
+						],
+					},
+				],
+			],
+		},
+		
 		'Fast':
 		{
 			'cflags':
