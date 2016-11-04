@@ -26,9 +26,9 @@
 
 
 // Functions used to load the weakly-linked GDK library
-extern "C" bool initialise_weak_link_X11();
-extern "C" bool initialise_weak_link_gobject();
-extern "C" bool initialise_weak_link_gdk();
+extern "C" int initialise_weak_link_X11();
+extern "C" int initialise_weak_link_gobject();
+extern "C" int initialise_weak_link_gdk();
 
 
 GdkWindow* MCLinuxRawClipboard::s_clipboard_window = NULL;
