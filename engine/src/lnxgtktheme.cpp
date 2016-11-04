@@ -818,11 +818,11 @@ Widget_Part MCNativeTheme::hittestcombobutton(const MCWidgetInfo &winfo,
 
 	MCRectangle btnRect = {	int2(drect.x + (drect.width - btnWidth)),
 	                        drect.y,
-	                        int2(btnWidth),
+	                        uint2(btnWidth),
 	                        drect.height };
 	MCRectangle txtRect = { drect.x,
 	                        drect.y,
-	                        int2(drect.width - btnWidth),
+	                        uint2(drect.width - btnWidth),
 	                        drect.height };
 
 	if(MCU_point_in_rect(btnRect, mx, my))
