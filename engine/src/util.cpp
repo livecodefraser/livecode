@@ -1100,7 +1100,7 @@ void MCU_break_string(const MCString &s, MCString *&ptrs, uint2 &nptrs,
 void MCU_realloc(char **data, uint4 osize, uint4 nsize, uint4 csize)
 {
 	char *ndata = new char[nsize * csize];
-	if (data != NULL)
+	if (*data != NULL)
 	{
 		if (nsize > osize)
 			memcpy(ndata, *data, osize * csize);
