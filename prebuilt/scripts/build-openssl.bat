@@ -7,7 +7,7 @@ REM #   BUILD OPENSSL
 REM #
 
 SET OPENSSL_TGZ=%_ROOT_DIR%\openssl-%OpenSSL_VERSION%.tar.gz
-SET OPENSSL_SRC=%_ROOT_DIR%\openssl-%OpenSSL_VERSION%
+SET OPENSSL_SRC=%_ROOT_DIR%\openssl-%OpenSSL_VERSION%-%ARCH%
 
 cd "%_ROOT_DIR%"
 
@@ -19,6 +19,7 @@ if not exist %OPENSSL_TGZ% (
 if not exist %OPENSSL_SRC% (
 	echo "Unpacking openssl-%OPENSSL_VERSION%"
 	perl -MArchive::Tar -e "$Archive::Tar::FOLLOW_SYMLINK=1;Archive::Tar->extract_archive('%OpenSSL_TGZ%', 1);"
+	ren openssl-%OpenSSL_VERSION% openssl-%OpenSSL_VERSION%-%ARCH%
 )
 
 cd "%OPENSSL_SRC%"

@@ -1,9 +1,6 @@
 {
 	'variables':
 	{
-		# Path to the Windows SDK for Apple QuickTime
-		'quicktime_sdk%': '$(foo)C:/Program Files/QuickTime SDK',
-		
 		# Path to versions 4 and 5 of the Microsoft Speech SDK
 		'ms_speech_sdk4%': '$(foo)C:/Program Files/Microsoft Speech SDK',
 		'ms_speech_sdk5%': '$(foo)C:/Program Files/Microsoft Speech SDK 5.1',
@@ -28,9 +25,32 @@
 			'silence_warnings': 0,
 		},
 		
+		'include_dirs':
+		[
+			'$(foo)C:/WinDDK/7600.16385.1/inc/atl71',
+			'$(foo)C:/WinDDK/7600.16385.1/inc/mfc42',
+		],
+		
+		'library_dirs':
+		[
+			'$(foo)C:/WinDDK/7600.16385.1/lib/ATL/i386',
+			'$(foo)C:/WinDDK/7600.16385.1/lib/MFC/i386',
+		],
+		
 		# Don't assume a Cygwin environment when invoking actions
 		'msvs_cygwin_shell': 0,
 		
+		'conditions':
+		[
+			[
+				'target_arch == "x64"',
+				{
+					'msvs_target_platform': 'x64',
+					'msvs_configuration_platform': 'x64',
+				},
+			],
+		],
+
 		'configurations':
 		{
 			'Debug':
@@ -40,15 +60,12 @@
 					'VCCLCompilerTool':
 					{
 						'Optimization': '0',
-						'PreprocessorDefinitions': ['_DEBUG'],
-						'RuntimeLibrary': '1',
+						'RuntimeLibrary': '0',
 						'DebugInformationFormat': '4',
 					},
 					
 					'VCLinkerTool':
 					{
-						'AdditionalOptions': '/NODEFAULTLIB:LIBCMT',
-						'LinkIncremental': '2',
 						'OptimizeReferences': '2',
 						'GenerateDebugInformation': 'true',
 						'EnableCOMDATFolding': '2',
@@ -125,8 +142,11 @@
 			'_CRT_SECURE_NO_DEPRECATE',
 			'_CRT_DISABLE_PERFCRIT_LOCKS',
 			'__LITTLE_ENDIAN__',
-			'WINVER=0x0501',		# Windows XP
-			'_WIN32_WINNT=0x0501',		# Windows XP
+			'WINVER=0x0601',        # Windows 7
+			'_WIN32_WINNT=0x0601',  # Windows 7
+
+			# Disable iterator debugging (the feature is not link-compatible)
+			'_ITERATOR_DEBUG_LEVEL=0',
 		],
 		
 		'target_conditions':
@@ -168,6 +188,11 @@
 						{
 							'WarningLevel': '0',
 						},
+
+						'MASM':
+						{
+							'WarningLevel': '0',
+						}
 					},
 				},
 			],
@@ -180,13 +205,14 @@
 				'ExceptionHandling': '0',
 				'BufferSecurityCheck': 'false',
 				'RuntimeTypeInfo': 'false',
-				'Detect64BitPortabilityProblems': 'false',
+				'Detect64BitPortabilityProblems': 'true',
 			},
 			
 			'VCLinkerTool':
 			{
 				'SubSystem': '2',
 				'RandomizedBaseAddress': '1',	# /DYNAMICBASE:NO - disable ASLR
+				'ImageHasSafeExceptionHandlers': 'false',
 			},
 		},
 	},

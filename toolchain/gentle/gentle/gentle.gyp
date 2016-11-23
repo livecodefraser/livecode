@@ -42,7 +42,7 @@
 				'symtab.c',
 				'yytab.c',
 			],
-			
+
 			'msvs_settings':
 			{
 				'VCLinkerTool':

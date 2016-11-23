@@ -36,23 +36,15 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 #include <revolution/support.h>
 
 #include "revvideograbber.h"
-#include "qtvideograbber.h"
 
 #ifdef WIN32
 #include "dsvideograbber.h"
 #include "mcivideograbber.h"
 #endif
 
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 1040
-#define kNativeEndianPixMap 0
-#define kCGBitmapByteOrder32Host 0
-#endif
-
 #define istrdup strdup
 
 static CVideoGrabber *gvideograbber = NULL;
-
-extern CVideoGrabber *CreateQTXVideoGrabber(WindowPtr window);
 
 void VideoGrabberDoIdle()
 {
@@ -122,7 +114,7 @@ MYBITMAP *createmybitmap(uint2 depth, uint2 width, uint2 height)
   image->bytes_per_line = ((width * depth + 31) >> 3) & 0xFFFFFFFC;
   image->data = NULL;
   image->bm = NULL;
-  #ifdef WIN32
+#ifdef WIN32
   BITMAPINFO *bmi = NULL;
   bmi = (BITMAPINFO *)new char[sizeof(BITMAPV4HEADER)];
   memset(bmi, 0, sizeof(BITMAPV4HEADER));
@@ -142,24 +134,7 @@ MYBITMAP *createmybitmap(uint2 depth, uint2 width, uint2 height)
   if (image->data == NULL || image->bm == NULL)
     image->data = (uint1 *)new char[image->bytes_per_line * image->height];
   delete bmi;
-  #else //MAC
-   Rect r;
-    r.top = r.left = 0;
-    r.bottom = height;
-    r.right = width;
-   QDErr err = NewGWorld(&image->bm, depth, &r, NULL, NULL, useTempMem | kNativeEndianPixMap);
-    if (image->bm != NULL || err == noErr) {
-      PixMapHandle dpm = GetGWorldPixMap(image->bm);
-      LockPixels(dpm);
-      image->data = (uint1 *)GetPixBaseAddr(dpm);
-      image->bytes_per_line = (*dpm)->rowBytes & 0x3FFF;
-    }
-    if (image->data == NULL) {
-    image->bytes_per_line = ((width * depth + 31) >> 3) & 0xFFFFFFFC;
-    image->data = (uint1 *)new char[image->bytes_per_line * height];
-    image->bm = NULL;
-  	}
-    #endif
+#endif
   return image;
 }
 	
@@ -170,33 +145,9 @@ void destroymybitmap(MYBITMAP *image)
     delete image->data;
   else
     DeleteObject(image->bm);
-    #else
-      if (image->bm != NULL) {
-    PixMapHandle dpm = GetGWorldPixMap(image->bm);
-    UnlockPixels(dpm);
-    DisposeGWorld(image->bm);
-  }
-  else
-    delete image->data;
-    #endif
+#endif
   delete image;
 }
-
-
-Bool InitQT()
-{
-	static Bool QTInited = False;
-	if (QTInited) return QTInited;
-#ifdef WIN32
-	if (InitializeQTML(0L) == noErr || EnterMovies() == noErr)
-		QTInited = True;
-#else
-    if (EnterMovies() == noErr)
-        QTInited = True;
-#endif
-	return QTInited;
-}
-
 
 
 enum VideoGrabberKeyword
@@ -271,35 +222,6 @@ VideoGrabberKeywordRec VideoGrabberDialogKeywords[] = {
 
 #include <ctype.h>
 
-#ifdef _MACOSX
-int _stricmp(const char *s1, const char *s2)
-{
-    char c1, c2;
-   while (1)
-    {
-    	c1 = tolower(*s1++);
-    	c2 = tolower(*s2++);
-        if (c1 < c2) return -1;
-        if (c1 > c2) return 1;
-        if (c1 == 0) return 0;
-    }
-}
-
-int _strnicmp(const char *s1, const char *s2, int n)
-{
-    int i;
-    char c1, c2;
-    for (i=0; i<n; i++)
-    {
-        c1 = tolower(*s1++);
-        c2 = tolower(*s2++);
-        if (c1 < c2) return -1;
-        if (c1 > c2) return 1;
-        if (!c1) return 0;
-    }
-    return 0;
-}
-#endif
 
 inline char *BoolToStr(Bool b) 
 {return b == True ? istrdup("TRUE"): istrdup("FALSE");}
@@ -338,39 +260,6 @@ void *getWindowId(char *p_stack_or_window_reference)
 	
 	// If neither of the two above options succeed we revert to the old behavior and return the foremost window's id.
 	return GetForegroundWindow();
-
-}
-
-#else
-
-void *getWindowId(char *p_stack_or_window_reference)
-{
-	// If p_stack_or_window_reference is an integer, we assume it to be the windowId of a Revolution stack
-	// and return it as a pointer
-	char *t_end_pointer;
-	long t_window_id;
-	t_window_id = strtol(p_stack_or_window_reference, &t_end_pointer, 10);
-	if (*t_end_pointer == NULL)
-		return (void *)t_window_id;
-	
-	// If p_stack_or_window_reference is not an integer, but is not empty or NULL then we attempt to
-	// resolve it as a stack reference using EvalExp.
-	const char t_expression_template[] = "the windowId of stack \0";
-	char *t_expression;
-	t_expression = (char *)malloc(strlen(t_expression_template) + strlen(p_stack_or_window_reference) + 3);
-	sprintf(t_expression, "%s\"%s\"\0", t_expression_template, p_stack_or_window_reference);
-	
-	int t_success;
-	t_success = 0;
-	
-	char *t_result;
-	t_result = EvalExpr(t_expression, &t_success);
-	t_window_id = strtol(t_result, &t_end_pointer, 10);
-	if (*t_end_pointer == NULL)
-		return (void *)t_window_id;
-	
-	// If neither of the two above options succeed we revert to the old behavior and return the foremost window's id.
-	return FrontWindow();
 
 }
 
@@ -618,9 +507,6 @@ void REVVideoGrabber(VideoGrabberKeyword whichkeyword,
 #ifdef WIN32
 				HWND windowid;
 				windowid = (HWND)getWindowId(args[0]);
-#else
-				WindowPtr windowid;
-				windowid = (WindowPtr)getWindowId(args[0]);
 #endif
 
 
@@ -629,23 +515,12 @@ void REVVideoGrabber(VideoGrabberKeyword whichkeyword,
 #ifdef WIN32
 				if (_strnicmp(args[1], "vfw",strlen("vfw")) == 0)
                     gvideograbber = new (nothrow) CWinVideoGrabber(windowid);
-                else if (_strnicmp(args[1], "qt",strlen("qt")) == 0)
-                {
-#else
-                if (stricmp(args[1], "qtx") == 0)
-                    gvideograbber = CreateQTXVideoGrabber(windowid);
-				else
-				{
+                else
 #endif
-                    if (InitQT())
-                        gvideograbber = new (nothrow) CQTVideoGrabber(windowid);
-                    else
-                    {
-                        // SN-2015-04-17: [[ Bug 13452 ]] Break if qvideograbber
-                        //  has not been created successfully
-                        result = istrdup("ERROR: cannot load quicktime");
-                        break;
-                    }
+				if (_strnicmp(args[1], "qt",strlen("qt")) == 0)
+                {
+                    result = istrdup("ERROR: QuickTime is no longer supported");
+					*error = True;
                 }
 #ifdef WIN32
                 else

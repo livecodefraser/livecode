@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <ctype.h>
 #include <errno.h>
 
@@ -43,7 +44,7 @@ struct Binding
     BindingRef next;
     NameRef name;
     unsigned int has_meaning : 1;
-    long meaning;
+    intptr_t meaning;
 };
 
 typedef struct Scope *ScopeRef;
@@ -144,11 +145,11 @@ int IsIntegerLiteral(const char *p_token)
 // Integer literals are actually unsigned, even though they pass through as
 // longs. Indeed, a -ve integer literal is not possible since it is prevented
 // by the token's regex.
-int MakeIntegerLiteral(const char *p_token, long *r_literal)
+int MakeIntegerLiteral(const char *p_token, intptr_t *r_literal)
 {
 	int t_base = 0;
 	const char *t_literal_start = NULL;
-    unsigned long t_value = 0;
+    intptr_t t_value = 0;
 	
 	__ComputeIntegerLiteralBaseAndStart(p_token, &t_base, &t_literal_start);
 
@@ -158,7 +159,7 @@ int MakeIntegerLiteral(const char *p_token, long *r_literal)
     if (errno == ERANGE || t_value > 0xFFFFFFFFU)
         return 0;
     
-    *r_literal = (long)t_value;
+    *r_literal = t_value;
     
     return 1;
 }
@@ -318,7 +319,7 @@ int IsDoubleLiteral(const char *p_token)
 	return 1;
 }
 
-int MakeDoubleLiteral(const char *p_token, long *r_literal)
+int MakeDoubleLiteral(const char *p_token, intptr_t *r_literal)
 {
     double *t_value_slot = NULL;
 	double t_value = 0.0;
@@ -335,7 +336,7 @@ int MakeDoubleLiteral(const char *p_token, long *r_literal)
 	}
 	
 	*t_value_slot = t_value;
-    *r_literal = (long)t_value_slot;
+    *r_literal = (intptr_t)t_value_slot;
 	
 	return 1;
 }
@@ -394,7 +395,7 @@ void append_utf8_char(char *p_string, int *x_index, int p_char)
     }
 }
 
-int UnescapeStringLiteral(long p_position, const char *p_string, long *r_unescaped_string)
+int UnescapeStringLiteral(intptr_t p_position, const char *p_string, intptr_t *r_unescaped_string)
 {
     // Allocate enough room for the length of the string including a NUL char.
     // This is more than enough to handle any escapes as escaped chars are always
@@ -499,7 +500,7 @@ int UnescapeStringLiteral(long p_position, const char *p_string, long *r_unescap
     
     t_value[t_length++] = '\0';
     
-    *r_unescaped_string = (long)t_value;
+    *r_unescaped_string = (intptr_t)t_value;
 
     return 1;
     
@@ -508,7 +509,7 @@ error_exit:
     return 0;
 }
 
-void MakeStringLiteral(const char *p_token, long *r_literal)
+void MakeStringLiteral(const char *p_token, intptr_t *r_literal)
 {
     
     char *t_value;
@@ -516,7 +517,7 @@ void MakeStringLiteral(const char *p_token, long *r_literal)
     if (t_value == NULL)
         Fatal_OutOfMemory();
     t_value[strlen(t_value) - 1] = '\0';
-    *r_literal = (long)t_value;
+    *r_literal = (intptr_t)t_value;
 }
 
 void MakeNameLiteralN(const char *p_token, int p_token_length, NameRef *r_literal)
@@ -591,14 +592,14 @@ int IsStringEqualToString(const char *p_left, const char *p_right)
     return strcmp(p_left, p_right) == 0;
 }
 
-void NegateReal(long p_real, long *r_real)
+void NegateReal(intptr_t p_real, intptr_t *r_real)
 {
     double *t_value;
     t_value = (double *)malloc(sizeof(double));
     if (t_value == NULL)
         Fatal_OutOfMemory();
     *t_value = -*(double *)p_real;
-    *r_real = (long)t_value;
+    *r_real = (intptr_t)t_value;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -664,7 +665,7 @@ void LeaveScope(void)
     FreeScope(t_scope);
 }
 
-void DefineMeaning(NameRef p_name, long p_meaning)
+void DefineMeaning(NameRef p_name, intptr_t p_meaning)
 {
     BindingRef t_binding;
 	
@@ -701,7 +702,7 @@ void UndefineMeaning(NameRef p_name)
     }
 }
 
-int HasLocalMeaning(NameRef p_name, long *r_meaning)
+int HasLocalMeaning(NameRef p_name, intptr_t *r_meaning)
 {
     BindingRef t_binding;
 	
@@ -718,7 +719,7 @@ int HasLocalMeaning(NameRef p_name, long *r_meaning)
     return 0;
 }
 
-int HasMeaning(NameRef p_name, long *r_meaning)
+int HasMeaning(NameRef p_name, intptr_t *r_meaning)
 {
     ScopeRef t_scope;
 	

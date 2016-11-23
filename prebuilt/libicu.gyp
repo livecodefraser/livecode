@@ -20,6 +20,12 @@
 			# Needs to be all dependents as used by the HarfBuzz public headers
 			'all_dependent_settings':
 			{
+				'defines':
+				[
+					# Ensure that symbols are referenced in the right way for a static lib
+					'U_STATIC_IMPLEMENTATION=1',
+				],
+				
 				'include_dirs':
 				[
 					'include',
@@ -140,8 +146,6 @@
 							[
 								'-lsicuin',
 								'-lsicuio',
-								'-lsicule',
-								'-lsiculx',
 								'-lsicutu',
 								'-lsicuuc',
 								'-lsicudt',

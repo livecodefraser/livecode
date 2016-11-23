@@ -12,10 +12,12 @@
  for more details.
  
  You should have received a copy of the GNU General Public License
- along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
+ aintptr_t with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 
 #ifndef __LITERAL__
 #define __LITERAL__
+
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,9 +30,9 @@ void FinalizeLiterals(void);
 
 int IsDoubleLiteral(const char *token);
 int IsIntegerLiteral(const char *token);
-int MakeIntegerLiteral(const char *token, long *r_literal);
-int MakeDoubleLiteral(const char *token, long *r_literal);
-void MakeStringLiteral(const char *token, long *r_literal);
+int MakeIntegerLiteral(const char *token, intptr_t *r_literal);
+int MakeDoubleLiteral(const char *token, intptr_t *r_literal);
+void MakeStringLiteral(const char *token, intptr_t *r_literal);
 void MakeNameLiteral(const char *token, NameRef *r_literal);
 void MakeNameLiteralN(const char *p_token, int p_token_length, NameRef *r_literal);
 int IsNameEqualToName(NameRef p_left, NameRef p_right);
@@ -43,10 +45,10 @@ void FinalizeScopes(void);
 void EnterScope(void);
 void LeaveScope(void);
 
-void DefineMeaning(NameRef name, long meaning);
+void DefineMeaning(NameRef name, intptr_t meaning);
 void UndefineMeaning(NameRef name);
-int HasLocalMeaning(NameRef name, long *r_meaning);
-int HasMeaning(NameRef name, long *r_meaning);
+int HasLocalMeaning(NameRef name, intptr_t *r_meaning);
+int HasMeaning(NameRef name, intptr_t *r_meaning);
 
 #ifdef __cplusplus
 }

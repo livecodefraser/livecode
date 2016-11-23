@@ -112,6 +112,11 @@
 						[
 							'__EXCEPTIONS',
 						],
+
+						'libraries':
+						[
+							'-latlthunk',
+						],
 						
 						'all_dependent_settings':
 						{

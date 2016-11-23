@@ -65,15 +65,6 @@ bool MCThrow(uint32_t p_error)
 #include <crtdbg.h>
 #include <dbghelp.h>
 
-extern "C"
-_CRTIMP int __cdecl _VCrtDbgReportA(
-        int nRptType,
-        const char * szFile,
-        int nLine,
-        const char * szModule,
-        const char * szFormat,
-        va_list arglist
-        );
 
 void __MCAssert(const char *p_file, uint32_t p_line, const char *p_message)
 {

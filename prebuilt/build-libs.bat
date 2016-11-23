@@ -29,11 +29,11 @@ IF NOT DEFINED ARCH (
 )
 
 REM Set up the compilation environment
-if %ARCH%==x86_64 (
-  CALL "%_WINSDK_ROOT%\bin\setenv.cmd" /x64 /release /xp
-) ELSE (
-  CALL "%_WINSDK_ROOT%\bin\setenv.cmd" /x86 /release /xp
-)
+REM if %ARCH%==x86_64 (
+REM  CALL "%_WINSDK_ROOT%\bin\setenv.cmd" /x64 /release /xp
+REM ) ELSE (
+REM  CALL "%_WINSDK_ROOT%\bin\setenv.cmd" /x86 /release /xp
+REM )
 
 REM Ensure Cygwin and NASM are in the path
 WHERE /Q bash 1>NUL 2>NUL

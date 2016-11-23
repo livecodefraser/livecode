@@ -7,7 +7,7 @@ REM #   BUILD CURL
 REM #
 
 SET CURL_TGZ=%_ROOT_DIR%\curl-%CURL_VERSION%.tar.gz
-SET CURL_SRC=%_ROOT_DIR%\curl-%CURL_VERSION%
+SET CURL_SRC=%_ROOT_DIR%\curl-%CURL_VERSION%-%ARCH%
 
 cd "%_ROOT_DIR%"
 
@@ -19,6 +19,7 @@ if not exist %CURL_TGZ% (
 if not exist %CURL_SRC% (
 	echo "Unpacking curl-%CURL_VERSION%"
 	perl -MArchive::Tar -e "$Archive::Tar::FOLLOW_SYMLINK=1;Archive::Tar->extract_archive('%CURL_TGZ%', 1);"
+	ren curl-%CURL_VERSION% curl-%CURL_VERSION%-%ARCH%
 )
 
 cd "%CURL_SRC%"

@@ -310,7 +310,7 @@ bool MCScriptCreateObject(MCScriptObjectKind p_kind, size_t p_size, MCScriptObje
     if (!MCMemoryAllocate(p_size, self))
         return false;
     
-#ifdef _DEBUG
+#ifndef NDEBUG
     self -> __object_marker__ = __MCSCRIPTOBJECT_MARKER__;
 #endif
     
@@ -389,13 +389,13 @@ void MCScriptReleaseObjectArray(MCScriptObject **p_elements, uindex_t p_count)
 void __MCScriptValidateObjectFailed__(MCScriptObject *object, const char *function, const char *file, int line)
 {
     MCLog("NOT A SCRIPT OBJECT - %p, %s, %s, %d", object, function, file, line);
-    abort();
+    //abort();
 }
 
 void __MCScriptValidateObjectAndKindFailed__(MCScriptObject *object, MCScriptObjectKind kind, const char *function, const char *file, int line)
 {
     MCLog("NOT A CORRECT OBJECT - %p, %d, %s, %s, %d", object, kind, function, file, line);
-    abort();
+    //abort();
 }
 
 void __MCScriptAssertFailed__(const char *label, const char *expr, const char *function, const char *file, int line)
